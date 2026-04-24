@@ -52,7 +52,7 @@
     .slide {
       position: absolute; inset: 0;
       display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
+      align-items: flex-start; justify-content: center;
       padding: 64px 96px;
       opacity: 0;
       pointer-events: none;
@@ -606,95 +606,68 @@ personas = [<span class="st">"Ana"</span>, <span class="st">"Luis"</span>, <span
 
   <!-- 7 · CONTEXTO DEL PROYECTO -->
   <section class="slide" data-i="7">
-    <h2 class="slide-title">Contexto del Proyecto</h2>
-    <div class="hbox" style="margin-bottom:22px">
-      <p>El proyecto es una <strong>aplicación móvil multiplataforma</strong> construida con <strong>Expo (React Native)</strong>, con pantallas nativas iOS/Android, navegación, consumo de APIs REST, autenticación y notificaciones push.</p>
-    </div>
-    <div class="grid c3">
-      <div class="card">
-        <div class="ci">📱</div>
-        <h3>UI Nativa</h3>
-        <p>Expo + React Native renderiza componentes verdaderamente nativos para iOS y Android desde una sola base de código.</p>
+    <h2 class="stitle">Contexto del Proyecto</h2>
+    <p style="font-size:18px;color:var(--muted);margin-bottom:28px;line-height:1.65">
+      El proyecto es una <strong style="color:var(--text)">aplicación móvil multiplataforma</strong> construida con <strong style="color:var(--yellow)">Expo (React Native)</strong>, con pantallas nativas iOS/Android, navegación, consumo de APIs REST, autenticación y notificaciones push.
+    </p>
+    <div class="open-rows">
+      <div class="orow">
+        <span class="oi">📱</span>
+        <div><h4>UI Nativa iOS & Android</h4><p>Expo + React Native renderiza componentes verdaderamente nativos para ambas plataformas desde una sola base de código JavaScript/TypeScript.</p></div>
       </div>
-      <div class="card">
-        <div class="ci">🔗</div>
-        <h3>APIs & Servicios</h3>
-        <p>Integración con servicios externos, autenticación OAuth2, cámara, sensores y notificaciones push vía Expo SDK.</p>
+      <div class="orow">
+        <span class="oi">🔗</span>
+        <div><h4>APIs & Servicios Externos</h4><p>Integración con servicios externos, autenticación OAuth2, acceso a cámara, sensores y notificaciones push vía Expo SDK.</p></div>
       </div>
-      <div class="card">
-        <div class="ci">🚀</div>
-        <h3>OTA Updates</h3>
-        <p>Expo EAS permite publicar actualizaciones al instante sin pasar por revisión de App Store o Google Play.</p>
+      <div class="orow">
+        <span class="oi">🚀</span>
+        <div><h4>OTA Updates con Expo EAS</h4><p>Actualización instantánea de la app sin pasar por revisión de App Store o Google Play — ciclo de iteración mucho más rápido.</p></div>
       </div>
     </div>
   </section>
 
   <!-- 8 · VENTAJAS EN PYTHON -->
   <section class="slide" data-i="8">
-    <h2 class="slide-title">Ventajas si se usara Python</h2>
-    <div class="list">
-      <div class="li pro">
-        <span class="ico">🤖</span>
-        <div class="body">
-          <h4>Ecosistema de IA sin rival</h4>
-          <p>SDKs oficiales de Gemini, OpenAI y Groq disponibles en pip. Si el proyecto incorpora ML o procesamiento de datos, Python reduce el boilerplate a cero vs. llamadas HTTP manuales desde JS.</p>
-        </div>
+    <h2 class="stitle">Ventajas si se usara Python</h2>
+    <div class="open-rows">
+      <div class="orow pro">
+        <span class="oi">🤖</span>
+        <div><h4>Ecosistema de IA sin rival</h4><p>SDKs oficiales de Gemini, OpenAI y Groq disponibles en pip. Reduce el boilerplate a cero vs. llamadas HTTP manuales desde JavaScript.</p></div>
       </div>
-      <div class="li pro">
-        <span class="ico">⚡</span>
-        <div class="body">
-          <h4>Prototipado de backend ultra-rápido</h4>
-          <p>FastAPI + Pydantic permiten definir modelos y endpoints REST funcionales en horas. Para iterar rápido en lógica de negocio, Python reduce la fricción significativamente.</p>
-        </div>
+      <div class="orow pro">
+        <span class="oi">⚡</span>
+        <div><h4>Prototipado de backend ultra-rápido</h4><p>FastAPI + Pydantic permiten definir modelos y endpoints REST funcionales en horas. Para iterar en lógica de negocio, Python reduce la fricción significativamente.</p></div>
       </div>
-      <div class="li pro">
-        <span class="ico">📜</span>
-        <div class="body">
-          <h4>Automatización y scripting de primer nivel</h4>
-          <p>Tareas como procesamiento de datos, generación de reportes, migraciones y seeds de base de datos son más simples y legibles en Python que en JS/TS.</p>
-        </div>
+      <div class="orow pro">
+        <span class="oi">📜</span>
+        <div><h4>Automatización y scripting de primer nivel</h4><p>Procesamiento de datos, reportes, migraciones y seeds de base de datos son más simples y legibles en Python que en JS/TS.</p></div>
       </div>
-      <div class="li pro">
-        <span class="ico">💡</span>
-        <div class="body">
-          <h4>Menor curva de entrada para el equipo</h4>
-          <p>Para un proyecto académico, Python reduce la complejidad del backend y permite enfocarse en la lógica de negocio en lugar de la infraestructura.</p>
-        </div>
+      <div class="orow pro">
+        <span class="oi">💡</span>
+        <div><h4>Menor curva de entrada para el equipo</h4><p>Para un proyecto académico, Python reduce la complejidad del backend y permite enfocarse en la lógica de negocio en lugar de la infraestructura.</p></div>
       </div>
     </div>
   </section>
 
   <!-- 9 · DESVENTAJAS -->
   <section class="slide" data-i="9">
-    <h2 class="slide-title">Desventajas y Dificultades</h2>
-    <div class="list">
-      <div class="li con">
-        <span class="ico">📱</span>
-        <div class="body">
-          <h4>Python no existe en mobile nativo</h4>
-          <p>No hay equivalente real a React Native. Kivy y BeeWare/Toga existen, pero su ecosistema es rudimentario — sin acceso real a módulos nativos de Expo (cámara, sensores, push notifications, geolocalización).</p>
-        </div>
+    <h2 class="stitle">Desventajas y Dificultades</h2>
+    <div class="open-rows">
+      <div class="orow con">
+        <span class="oi">📱</span>
+        <div><h4>Python no existe en mobile nativo</h4><p>No hay equivalente real a React Native. Kivy y BeeWare/Toga existen, pero sin acceso a módulos nativos de Expo: cámara, sensores, push notifications, geolocalización.</p></div>
       </div>
-      <div class="li con">
-        <span class="ico">🏪</span>
-        <div class="body">
-          <h4>Distribución en App Store y Google Play</h4>
-          <p>Publicar una app Python en las tiendas es extremadamente complejo. Las plataformas no están diseñadas para eso y hay restricciones técnicas y políticas serias.</p>
-        </div>
+      <div class="orow con">
+        <span class="oi">🏪</span>
+        <div><h4>Distribución en App Store y Google Play</h4><p>Publicar una app Python en las tiendas es extremadamente complejo. Las plataformas no están diseñadas para eso — hay restricciones técnicas y políticas serias.</p></div>
       </div>
-      <div class="li con">
-        <span class="ico">🎨</span>
-        <div class="body">
-          <h4>Experiencia de usuario nativa vs. híbrida degradada</h4>
-          <p>Sin Expo Router, sin Reanimated, sin componentes de navegación nativa. La UX de una app Python mobile sería notablemente inferior a lo que ofrece React Native.</p>
-        </div>
+      <div class="orow con">
+        <span class="oi">🎨</span>
+        <div><h4>UX nativa degradada</h4><p>Sin Expo Router, sin Reanimated, sin componentes de navegación nativa. La experiencia de usuario sería notablemente inferior a lo que ofrece React Native.</p></div>
       </div>
-      <div class="li con">
-        <span class="ico">⚙️</span>
-        <div class="body">
-          <h4>GIL limita la concurrencia real</h4>
-          <p>El Global Interpreter Lock de CPython limita el paralelismo real en el backend. Con asyncio es manejable, pero requiere que toda la aplicación sea async — lo que rompe muchas librerías síncronas.</p>
-        </div>
+      <div class="orow con">
+        <span class="oi">⚙️</span>
+        <div><h4>GIL limita la concurrencia real</h4><p>El Global Interpreter Lock de CPython limita el paralelismo. Con asyncio es manejable, pero requiere que toda la app sea async — lo que rompe muchas librerías síncronas.</p></div>
       </div>
     </div>
   </section>
