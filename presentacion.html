@@ -589,20 +589,20 @@ personas = [<span class="st">"Ana"</span>, <span class="st">"Luis"</span>, <span
   <section class="slide" data-i="7">
     <h2 class="stitle">Contexto del Proyecto</h2>
     <p style="font-size:18px;color:var(--muted);margin-bottom:28px;line-height:1.65">
-      El proyecto es una <strong style="color:var(--text)">aplicación móvil multiplataforma</strong> construida con <strong style="color:var(--yellow)">Expo (React Native)</strong>, con pantallas nativas iOS/Android, navegación, consumo de APIs REST, autenticación y notificaciones push.
+      <strong style="color:var(--yellow)">SlideHub</strong> es un sistema de <strong style="color:var(--text)">control de diapositivas en tiempo real</strong> construido con <strong style="color:var(--blue-light)">Java 21 + Spring Boot</strong>, con múltiples pantallas sincronizadas, control remoto desde el smartphone, notas del presentador generadas con IA y autenticación OAuth2.
     </p>
     <div class="open-rows">
       <div class="orow">
-        <span class="oi">📱</span>
-        <div><h4>UI Nativa iOS & Android</h4><p>Expo + React Native renderiza componentes verdaderamente nativos para ambas plataformas desde una sola base de código JavaScript/TypeScript.</p></div>
+        <span class="oi">🖥️</span>
+        <div><h4>Multi-pantalla en tiempo real</h4><p>Sincronización de slides vía Redis y polling. Control remoto táctil con feedback háptico desde el smartphone — sin depender de WebSockets externos.</p></div>
       </div>
       <div class="orow">
-        <span class="oi">🔗</span>
-        <div><h4>APIs & Servicios Externos</h4><p>Integración con servicios externos, autenticación OAuth2, acceso a cámara, sensores y notificaciones push vía Expo SDK.</p></div>
+        <span class="oi">🤖</span>
+        <div><h4>IA integrada (Gemini + Groq)</h4><p>Gemini Vision analiza slides visualmente para generar notas del presentador. Groq provee transcripción de audio (Whisper) y respuestas contextuales en tiempo real.</p></div>
       </div>
       <div class="orow">
-        <span class="oi">🚀</span>
-        <div><h4>OTA Updates con Expo EAS</h4><p>Actualización instantánea de la app sin pasar por revisión de App Store o Google Play — ciclo de iteración mucho más rápido.</p></div>
+        <span class="oi">🗄️</span>
+        <div><h4>Persistencia híbrida + Deploy en Render</h4><p>PostgreSQL para usuarios y sesiones, Redis para estado en vivo, MongoDB para notas IA. Assets en Amazon S3. Desplegado como monolito modular en Render.</p></div>
       </div>
     </div>
   </section>
