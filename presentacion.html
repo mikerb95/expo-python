@@ -482,20 +482,20 @@ personas = [<span class="st">"Ana"</span>, <span class="st">"Luis"</span>, <span
   <section class="slide" data-i="7">
     <h2 class="st">Contexto del Proyecto</h2>
     <p class="lead">
-      El proyecto es una <strong>aplicación móvil multiplataforma</strong> desarrollada con <strong>Expo (React Native)</strong>, con interfaces nativas para iOS y Android, navegación, APIs REST, autenticación y notificaciones push.
+      <strong>SlideHub</strong> es un sistema de <strong>control de diapositivas en tiempo real</strong> construido con <strong>Java 21 + Spring Boot</strong>. Múltiples pantallas sincronizadas, control remoto desde el smartphone, notas del presentador generadas con IA y autenticación OAuth2.
     </p>
     <div class="entries">
       <div class="entry">
         <div class="ebar"></div>
-        <div><div class="ehead">UI Nativa para iOS y Android</div><div class="ebody">Expo + React Native renderiza componentes verdaderamente nativos para ambas plataformas desde una única base de código JavaScript/TypeScript.</div></div>
+        <div><div class="ehead">Multi-pantalla en tiempo real</div><div class="ebody">Sincronización de slides vía Redis y polling. Control remoto táctil con feedback háptico desde el smartphone — sin WebSockets externos ni librerías P2P.</div></div>
       </div>
       <div class="entry">
         <div class="ebar"></div>
-        <div><div class="ehead">APIs, Autenticación y Servicios Externos</div><div class="ebody">Integración con servicios REST, OAuth2, acceso a cámara y sensores nativos, y notificaciones push vía Expo SDK.</div></div>
+        <div><div class="ehead">IA integrada — Gemini Vision + Groq</div><div class="ebody">Gemini Vision analiza cada slide visualmente para generar notas del presentador. Groq (Whisper) transcribe audio y produce respuestas contextuales en vivo. Todo vía HTTP — sin SDKs.</div></div>
       </div>
       <div class="entry">
         <div class="ebar"></div>
-        <div><div class="ehead">OTA Updates con Expo EAS</div><div class="ebody">Actualizaciones instantáneas sin revisión de App Store ni Google Play — ciclo de iteración acelerado respecto al modelo nativo tradicional.</div></div>
+        <div><div class="ehead">Persistencia híbrida + Deploy en Render</div><div class="ebody">PostgreSQL para usuarios y sesiones, Redis para estado en vivo, MongoDB para notas IA, Amazon S3 para assets. Monolito modular desplegado en Render.</div></div>
       </div>
     </div>
   </section>
