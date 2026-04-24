@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+  <title>Control Remoto · Python</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #080d1a;
+      --surface: #0f1729;
+      --surface2: #1a2340;
+      --blue: #4584b6;
+      --blue-light: #6aa3d4;
+      --yellow: #ffd43b;
+      --text: #eef2f8;
+      --muted: #7a90b0;
+      --border: #1e2d47;
+      --green: #22c55e;
+      --red: #ef4444;
+      --r: 16px;
+    }
+
+    html, body {
+      width: 100%; height: 100%;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+    }
+
+    body {
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: space-between;
+      min-height: 100vh;
+      padding: 24px 20px 32px;
+      gap: 0;
+    }
+
+    /* ── Top bar ── */
+    .top-strip {
+      position: fixed; top: 0; left: 0; right: 0; height: 3px;
+      background: linear-gradient(90deg, var(--blue), var(--yellow));
+      z-index: 10;
+    }
+
+    /* ── Header ── */
+    header {
+      width: 100%; display: flex; flex-direction: column;
+      align-items: center; gap: 16px;
+      padding-top: 16px;
+    }
+
+    /* ── Status ── */
+    #status-card {
+      width: 100%;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--r); padding: 14px 18px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+
+    .status-left { display: flex; align-items: center; gap: 10px; }
+
+    #status-dot {
+      width: 9px; height: 9px; border-radius: 50%;
+      background: var(--red); flex-shrink: 0;
+      transition: background .3s;
+    }
+    #status-dot.on { background: var(--green); }
+
+    #status-text { font-size: 13px; color: var(--muted); font-weight: 500; }
+
+    #slide-indicator {
+      font-size: 13px; color: var(--muted);
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* ── Slide preview card ── */
+    #slide-info {
+      width: 100%;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--r); padding: 18px 20px;
+      text-align: center;
+      min-height: 72px; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 6px;
+    }
+
+    #slide-name {
+      font-size: 16px; font-weight: 600; color: var(--text);
+      line-height: 1.3;
+    }
+
+    #slide-desc { font-size: 12px; color: var(--muted); }
+
+    /* ── Progress bar ── */
+    #prog-wrap {
+      width: 100%; height: 4px;
+      background: var(--surface2); border-radius: 100px;
+      overflow: hidden;
+    }
+    #prog-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--blue), var(--yellow));
+      border-radius: 100px;
+      transition: width .35s ease;
+    }
+
+    /* ── Controls area ── */
+    .controls {
+      width: 100%; display: flex; flex-direction: column;
+      align-items: center; gap: 16px;
+      flex: 1; justify-content: center;
+      padding: 24px 0;
+    }
+
+    /* ── Main nav row ── */
+    .nav-row {
+      display: flex; align-items: center;
+      gap: 16px; width: 100%;
+    }
+
+    .btn {
+      border: none; border-radius: var(--r);
+      cursor: pointer; font-family: 'Inter', sans-serif;
+      display: flex; align-items: center; justify-content: center;
+      -webkit-tap-highlight-color: transparent;
+      transition: transform .1s, opacity .1s;
+      user-select: none;
+    }
+
+    .btn:active { transform: scale(.94); opacity: .85; }
+
+    .btn-prev, .btn-next {
+      flex: 1; height: 100px;
+      font-size: 36px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text);
+    }
+
+    .btn-next {
+      background: linear-gradient(135deg, var(--blue) 0%, #3a70a0 100%);
+      border-color: transparent;
+      font-size: 38px;
+    }
+
+    /* ── Slide dots (quick jump) ── */
+    #dots {
+      display: flex; flex-wrap: wrap;
+      gap: 8px; justify-content: center;
+      padding: 4px 0;
+    }
+
+    .dot {
+      width: 32px; height: 32px; border-radius: 8px;
+      background: var(--surface); border: 1px solid var(--border);
+      font-size: 11px; font-weight: 600; color: var(--muted);
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      transition: all .15s;
+    }
+
+    .dot.active {
+      background: var(--blue); border-color: var(--blue);
+      color: white;
+    }
+
+    .dot:active { transform: scale(.88); }
+
+    /* ── First / Last shortcuts ── */
+    .extras {
+      display: flex; gap: 12px; width: 100%;
+    }
+
+    .btn-extra {
+      flex: 1; height: 44px;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 10px;
+      font-size: 12px; font-weight: 500; color: var(--muted);
+    }
+
+    /* ── Disconnected overlay ── */
+    #overlay {
+      position: fixed; inset: 0;
+      background: rgba(8,13,26,.92);
+      backdrop-filter: blur(4px);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 16px; z-index: 50;
+      text-align: center; padding: 32px;
+      transition: opacity .3s;
+    }
+
+    #overlay.hidden { opacity: 0; pointer-events: none; }
+
+    .overlay-icon { font-size: 48px; }
+
+    #overlay h2 { font-size: 20px; font-weight: 700; }
+
+    #overlay p { font-size: 14px; color: var(--muted); line-height: 1.55; max-width: 280px; }
+
+    .spinner {
+      width: 28px; height: 28px;
+      border: 3px solid var(--border);
+      border-top-color: var(--blue);
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    #retry-btn {
+      margin-top: 8px; padding: 12px 28px;
+      background: var(--blue); border: none;
+      border-radius: 10px; color: white;
+      font-size: 14px; font-weight: 600;
+      cursor: pointer; font-family: 'Inter', sans-serif;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+<div class="top-strip"></div>
+
+<!-- Disconnected overlay -->
+<div id="overlay">
+  <div class="overlay-icon">📡</div>
+  <h2>Conectando...</h2>
+  <p id="overlay-msg">Buscando la presentación. Asegúrate de haber escaneado el QR correctamente.</p>
+  <div class="spinner" id="spinner"></div>
+  <button class="btn" id="retry-btn" onclick="location.reload()">Reintentar</button>
+</div>
+
+<!-- Header -->
+<header>
+  <div id="status-card">
+    <div class="status-left">
+      <div id="status-dot"></div>
+      <span id="status-text">Conectando...</span>
+    </div>
+    <span id="slide-indicator">— / —</span>
+  </div>
+
+  <div id="prog-wrap"><div id="prog-fill" style="width:0%"></div></div>
+
+  <div id="slide-info">
+    <div id="slide-name">—</div>
+    <div id="slide-desc">Esperando conexión</div>
+  </div>
+</header>
+
+<!-- Controls -->
+<div class="controls">
+
+  <div class="nav-row">
+    <button class="btn btn-prev" onclick="send('prev')" title="Anterior">‹</button>
+    <button class="btn btn-next" onclick="send('next')" title="Siguiente">›</button>
+  </div>
+
+  <div id="dots"></div>
+
+  <div class="extras">
+    <button class="btn btn-extra" onclick="send('goto', 0)">⏮ Primera</button>
+    <button class="btn btn-extra" id="btn-last" onclick="gotoLast()">Última ⏭</button>
+  </div>
+
+</div>
+
+<script>
+  const SLIDE_NAMES = [
+    ['Portada', 'Python — Introducción'],
+    ['¿Qué es Python?', 'Definición, historia y datos clave'],
+    ['¿Para qué se utiliza?', 'Casos de uso principales'],
+    ['Características', 'Sintaxis, tipado, paradigmas'],
+    ['Ventajas', 'Por qué elegir Python'],
+    ['Áreas de Aplicación', 'ML, Web, Data, DevOps...'],
+    ['Análisis del Proyecto', 'Sección final'],
+    ['Contexto del Proyecto', 'Expo / React Native'],
+    ['Ventajas en Python', 'Beneficios potenciales'],
+    ['Desventajas', 'Dificultades y limitaciones'],
+    ['Veredicto', 'Conclusión y recomendación'],
+  ];
+
+  const params = new URLSearchParams(location.search);
+  const targetId = params.get('id');
+
+  let peer, conn;
+  let totalSlides = SLIDE_NAMES.length;
+  let currentSlide = 0;
+
+  const overlay = document.getElementById('overlay');
+  const overlayMsg = document.getElementById('overlay-msg');
+  const spinner = document.getElementById('spinner');
+  const retryBtn = document.getElementById('retry-btn');
+  const statusDot = document.getElementById('status-dot');
+  const statusText = document.getElementById('status-text');
+  const slideIndicator = document.getElementById('slide-indicator');
+  const progFill = document.getElementById('prog-fill');
+  const slideName = document.getElementById('slide-name');
+  const slideDesc = document.getElementById('slide-desc');
+  const dotsEl = document.getElementById('dots');
+
+  if (!targetId) {
+    overlayMsg.textContent = 'No se encontró ID de presentación en la URL. Escanea el QR desde la pantalla de presentación.';
+    spinner.style.display = 'none';
+    retryBtn.style.display = 'none';
+  } else {
+    init();
+  }
+
+  function init() {
+    peer = new Peer(undefined, {
+      host: 'peerjs.com', port: 443, path: '/',
+      secure: true, debug: 0,
+      config: { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] }
+    });
+
+    peer.on('open', () => {
+      conn = peer.connect(targetId, { reliable: true });
+
+      conn.on('open', () => {
+        overlay.classList.add('hidden');
+        statusDot.classList.add('on');
+        statusText.textContent = 'Conectado';
+        conn.send({ type: 'ping' });
+        buildDots();
+      });
+
+      conn.on('data', msg => {
+        if (msg.type === 'slide' || msg.type === 'pong') {
+          if (msg.total) totalSlides = msg.total;
+          updateSlide(msg.index);
+        }
+      });
+
+      conn.on('close', disconnect);
+      conn.on('error', disconnect);
+    });
+
+    peer.on('error', () => {
+      overlayMsg.textContent = 'No se pudo conectar. Verifica que la presentación esté abierta y vuelve a escanear el QR.';
+      spinner.style.display = 'none';
+      retryBtn.style.display = 'inline-flex';
+    });
+  }
+
+  function disconnect() {
+    statusDot.classList.remove('on');
+    statusText.textContent = 'Desconectado';
+    overlay.classList.remove('hidden');
+    overlayMsg.textContent = 'Se perdió la conexión. Recarga y vuelve a escanear el QR.';
+    spinner.style.display = 'none';
+    retryBtn.style.display = 'inline-flex';
+  }
+
+  function send(type, index) {
+    if (!conn || !conn.open) return;
+    const msg = { type };
+    if (index !== undefined) { msg.type = 'goto'; msg.index = index; }
+    conn.send(msg);
+    // Optimistic update
+    if (type === 'next') updateSlide(Math.min(currentSlide + 1, totalSlides - 1));
+    else if (type === 'prev') updateSlide(Math.max(currentSlide - 1, 0));
+    else if (msg.type === 'goto') updateSlide(index);
+    // Haptic feedback
+    if (navigator.vibrate) navigator.vibrate(18);
+  }
+
+  function gotoLast() { send('goto', totalSlides - 1); }
+
+  function updateSlide(n) {
+    currentSlide = Math.max(0, Math.min(totalSlides - 1, n));
+    const info = SLIDE_NAMES[currentSlide] || ['Diapositiva ' + (currentSlide + 1), ''];
+    slideName.textContent = info[0];
+    slideDesc.textContent = info[1];
+    slideIndicator.textContent = (currentSlide + 1) + ' / ' + totalSlides;
+    progFill.style.width = ((currentSlide / (totalSlides - 1)) * 100) + '%';
+    document.querySelectorAll('.dot').forEach((d, i) => {
+      d.classList.toggle('active', i === currentSlide);
+    });
+  }
+
+  function buildDots() {
+    dotsEl.innerHTML = '';
+    for (let i = 0; i < totalSlides; i++) {
+      const d = document.createElement('div');
+      d.className = 'dot' + (i === currentSlide ? ' active' : '');
+      d.textContent = i + 1;
+      d.addEventListener('click', () => send('goto', i));
+      dotsEl.appendChild(d);
+    }
+  }
+
+  // Swipe gesture support
+  let startX = 0;
+  document.addEventListener('touchstart', e => { startX = e.touches[0].clientX; }, { passive: true });
+  document.addEventListener('touchend', e => {
+    const dx = e.changedTouches[0].clientX - startX;
+    if (Math.abs(dx) > 60) {
+      if (dx < 0) send('next');
+      else send('prev');
+    }
+  }, { passive: true });
+</script>
+</body>
+</html>
