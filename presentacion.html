@@ -6,7 +6,6 @@
   <title>Python — Presentación</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-  <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -706,9 +705,7 @@ personas = [<span class="st">"Ana"</span>, <span class="st">"Luis"</span>, <span
 
 <script>
   const TOTAL = 11;
-  const PEER_ID = 'pypres-mike-python-2026'; // ID fijo — solo tú conoces /remote
   let current = 0;
-  let peer, conn;
 
   const slides = Array.from(document.querySelectorAll('.slide'));
   const progressFill = document.getElementById('progress-fill');
@@ -716,7 +713,7 @@ personas = [<span class="st">"Ana"</span>, <span class="st">"Luis"</span>, <span
   const connDot = document.getElementById('conn-dot');
   const connLabel = document.getElementById('conn-label');
 
-  function showSlide(n) {
+  function showSlide(n, push = true) {
     const prev = slides[current];
     prev.classList.remove('active');
     prev.classList.add('exit');
@@ -728,7 +725,13 @@ personas = [<span class="st">"Ana"</span>, <span class="st">"Luis"</span>, <span
     progressFill.style.width = ((current / (TOTAL - 1)) * 100) + '%';
     counter.textContent = (current + 1) + ' / ' + TOTAL;
 
-    if (conn && conn.open) conn.send({ type: 'slide', index: current });
+    if (push) {
+      fetch('/api/state', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ slide: current }),
+      }).catch(() => {});
+    }
   }
 
   function go(dir) { showSlide(current + dir); }
@@ -738,40 +741,21 @@ personas = [<span class="st">"Ana"</span>, <span class="st">"Luis"</span>, <span
     else if (e.key === 'ArrowLeft') { e.preventDefault(); go(-1); }
   });
 
-  function initPeer() {
-    peer = new Peer(PEER_ID, { secure: true, debug: 0 });
-
-    peer.on('connection', c => {
-      conn = c;
-      connDot.classList.add('on');
-      connLabel.textContent = 'Remoto conectado';
-
-      conn.on('open', () => conn.send({ type: 'slide', index: current, total: TOTAL }));
-
-      conn.on('data', msg => {
-        if (msg.type === 'next') go(1);
-        else if (msg.type === 'prev') go(-1);
-        else if (msg.type === 'goto') showSlide(msg.index);
-        else if (msg.type === 'ping') conn.send({ type: 'pong', index: current, total: TOTAL });
-      });
-
-      conn.on('close', () => {
-        connDot.classList.remove('on');
-        connLabel.textContent = 'Sin control remoto';
-      });
-    });
-
-    peer.on('error', err => {
-      if (err.type === 'unavailable-id') {
-        connLabel.textContent = 'ID en uso — recarga';
-      } else {
-        connLabel.textContent = 'Error de red';
+  // Polling — recibe cambios del remoto
+  let lastSeen = 0;
+  setInterval(async () => {
+    try {
+      const { slide } = await fetch('/api/state').then(r => r.json());
+      if (slide !== lastSeen) {
+        lastSeen = slide;
+        if (slide !== current) showSlide(slide, false);
+        connDot.classList.add('on');
+        connLabel.textContent = 'Remoto activo';
       }
-    });
-  }
+    } catch (_) {}
+  }, 1000);
 
   progressFill.style.width = '0%';
-  initPeer();
 </script>
 </body>
 </html>
