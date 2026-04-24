@@ -433,64 +433,45 @@
 
   <!-- 1 · ¿QUÉ ES PYTHON? -->
   <section class="slide" data-i="1">
-    <h2 class="slide-title">¿Qué es Python?</h2>
-    <div class="two-col">
-      <div style="display:flex;flex-direction:column;gap:16px">
-        <div class="hbox">
-          <p>Python es un lenguaje <strong>interpretado, de alto nivel y propósito general</strong>, diseñado para ser legible, expresivo y fácil de aprender.</p>
+    <h2 class="stitle">¿Qué es Python?</h2>
+    <div class="slide-2col">
+      <div class="open-rows">
+        <div class="orow">
+          <span class="oi">🧑‍💻</span>
+          <div>
+            <h4>Guido van Rossum · 1991</h4>
+            <p>Inspirado en ABC y Modula-3. El nombre viene de Monty Python, no de la serpiente. Mantenido por la Python Software Foundation.</p>
+          </div>
         </div>
-        <div class="list">
-          <div class="li">
-            <span class="ico">🧑‍💻</span>
-            <div class="body">
-              <h4>Guido van Rossum · 1991</h4>
-              <p>Inspirado en ABC y Modula-3. El nombre viene de Monty Python, no de la serpiente.</p>
-            </div>
+        <div class="orow">
+          <span class="oi">📖</span>
+          <div>
+            <h4>The Zen of Python</h4>
+            <p>"Simple es mejor que complejo. La legibilidad cuenta." — filosofía central que define cómo se escribe el lenguaje.</p>
           </div>
-          <div class="li">
-            <span class="ico">📖</span>
-            <div class="body">
-              <h4>The Zen of Python</h4>
-              <p>"Simple es mejor que complejo. La legibilidad cuenta."</p>
-            </div>
-          </div>
-          <div class="li">
-            <span class="ico">🌍</span>
-            <div class="body">
-              <h4>Lenguaje más popular del mundo</h4>
-              <p>Índice TIOBE y Stack Overflow Survey lo ubican #1 desde 2021.</p>
-            </div>
+        </div>
+        <div class="orow">
+          <span class="oi">🌍</span>
+          <div>
+            <h4>Lenguaje #1 del mundo</h4>
+            <p>Índice TIOBE y Stack Overflow Developer Survey lo ubican en el primer lugar desde 2021 de forma consecutiva.</p>
           </div>
         </div>
       </div>
-      <div style="display:flex;flex-direction:column;gap:16px">
+      <div style="display:flex;flex-direction:column;gap:24px">
         <div class="code">
 <span class="cm"># Python en pocas líneas</span><br>
 <span class="kw">def</span> <span class="fn">saludar</span>(nombre):<br>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">return</span> <span class="st">f"Hola, {nombre}!"</span><br>
 <br>
 personas = [<span class="st">"Ana"</span>, <span class="st">"Luis"</span>, <span class="st">"María"</span>]<br>
-<br>
 <span class="kw">for</span> p <span class="kw">in</span> personas:<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="nb">print</span>(saludar(p))<br>
-<br>
-<span class="cm"># Hola, Ana!</span><br>
-<span class="cm"># Hola, Luis!</span><br>
-<span class="cm"># Hola, María!</span>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="nb">print</span>(saludar(p))
         </div>
         <div class="stats">
-          <div class="stat">
-            <div class="num">500K+</div>
-            <div class="lbl">Paquetes en PyPI</div>
-          </div>
-          <div class="stat">
-            <div class="num">30+</div>
-            <div class="lbl">Años de historia</div>
-          </div>
-          <div class="stat">
-            <div class="num">#1</div>
-            <div class="lbl">TIOBE Index 2024</div>
-          </div>
+          <div class="stat"><div class="num">500K+</div><div class="lbl">Paquetes en PyPI</div></div>
+          <div class="stat"><div class="num">30+</div><div class="lbl">Años de historia</div></div>
+          <div class="stat"><div class="num">#1</div><div class="lbl">TIOBE 2024</div></div>
         </div>
       </div>
     </div>
@@ -498,85 +479,69 @@ personas = [<span class="st">"Ana"</span>, <span class="st">"Luis"</span>, <span
 
   <!-- 2 · PARA QUÉ SE UTILIZA -->
   <section class="slide" data-i="2">
-    <h2 class="slide-title">¿Para qué se utiliza?</h2>
-    <div class="grid c3">
-      <div class="card">
-        <div class="ci">🌐</div>
-        <h3>Desarrollo Web</h3>
-        <p>Django, FastAPI y Flask para construir APIs y aplicaciones web robustas y escalables.</p>
+    <h2 class="stitle">¿Para qué se utiliza?</h2>
+    <div class="open-2col">
+      <div class="open-rows">
+        <div class="orow">
+          <span class="oi">🌐</span>
+          <div><h4>Desarrollo Web</h4><p>Django, FastAPI y Flask para construir APIs y aplicaciones web robustas y escalables.</p></div>
+        </div>
+        <div class="orow">
+          <span class="oi">🤖</span>
+          <div><h4>Inteligencia Artificial</h4><p>TensorFlow, PyTorch, scikit-learn: el ecosistema de IA más completo del mundo.</p></div>
+        </div>
+        <div class="orow">
+          <span class="oi">📊</span>
+          <div><h4>Análisis de Datos</h4><p>pandas, NumPy, Matplotlib y Jupyter Notebooks para ciencia de datos.</p></div>
+        </div>
       </div>
-      <div class="card">
-        <div class="ci">🤖</div>
-        <h3>Inteligencia Artificial</h3>
-        <p>TensorFlow, PyTorch, scikit-learn: el ecosistema de IA más completo del mundo.</p>
-      </div>
-      <div class="card">
-        <div class="ci">📊</div>
-        <h3>Análisis de Datos</h3>
-        <p>pandas, NumPy, Matplotlib y Jupyter Notebooks para ciencia de datos.</p>
-      </div>
-      <div class="card">
-        <div class="ci">⚙️</div>
-        <h3>Automatización</h3>
-        <p>Scripts, bots, tareas programadas y automatización de sistemas operativos.</p>
-      </div>
-      <div class="card">
-        <div class="ci">🔒</div>
-        <h3>Ciberseguridad</h3>
-        <p>Pentesting, análisis forense y herramientas profesionales como Scapy y Nmap.</p>
-      </div>
-      <div class="card">
-        <div class="ci">☁️</div>
-        <h3>DevOps & Cloud</h3>
-        <p>Ansible, AWS Lambda, GCP Functions y scripts de infraestructura.</p>
+      <div class="open-rows">
+        <div class="orow">
+          <span class="oi">⚙️</span>
+          <div><h4>Automatización</h4><p>Scripts, bots, tareas programadas y automatización de sistemas operativos.</p></div>
+        </div>
+        <div class="orow">
+          <span class="oi">🔒</span>
+          <div><h4>Ciberseguridad</h4><p>Pentesting, análisis forense y herramientas profesionales como Scapy y Nmap.</p></div>
+        </div>
+        <div class="orow">
+          <span class="oi">☁️</span>
+          <div><h4>DevOps & Cloud</h4><p>Ansible, AWS Lambda, GCP Functions y scripts de infraestructura.</p></div>
+        </div>
       </div>
     </div>
   </section>
 
   <!-- 3 · CARACTERÍSTICAS -->
   <section class="slide" data-i="3">
-    <h2 class="slide-title">Características de Python</h2>
-    <div class="grid c2">
-      <div class="li">
-        <span class="ico">✍️</span>
-        <div class="body">
-          <h4>Sintaxis legible y limpia</h4>
-          <p>Usa indentación obligatoria. El código Python se lee casi como pseudocódigo — fácil de mantener y auditar.</p>
+    <h2 class="stitle">Características de Python</h2>
+    <div class="open-2col">
+      <div class="open-rows">
+        <div class="orow">
+          <span class="oi">✍️</span>
+          <div><h4>Sintaxis legible y limpia</h4><p>Usa indentación obligatoria. El código Python se lee casi como pseudocódigo — fácil de mantener y auditar.</p></div>
+        </div>
+        <div class="orow">
+          <span class="oi">🔄</span>
+          <div><h4>Tipado dinámico</h4><p>No es necesario declarar tipos. Las variables asumen el tipo de su valor en tiempo de ejecución.</p></div>
+        </div>
+        <div class="orow">
+          <span class="oi">🧩</span>
+          <div><h4>Multiparadigma</h4><p>Soporta programación orientada a objetos, funcional e imperativa de forma natural y simultánea.</p></div>
         </div>
       </div>
-      <div class="li">
-        <span class="ico">🔄</span>
-        <div class="body">
-          <h4>Tipado dinámico</h4>
-          <p>No es necesario declarar tipos. Las variables asumen el tipo de su valor en tiempo de ejecución.</p>
+      <div class="open-rows">
+        <div class="orow">
+          <span class="oi">🔋</span>
+          <div><h4>"Batteries included"</h4><p>Librería estándar extensísima: JSON, HTTP, archivos, regex, criptografía, concurrencia y más.</p></div>
         </div>
-      </div>
-      <div class="li">
-        <span class="ico">🧩</span>
-        <div class="body">
-          <h4>Multiparadigma</h4>
-          <p>Soporta programación orientada a objetos, funcional e imperativa de forma natural y simultánea.</p>
+        <div class="orow">
+          <span class="oi">🖥️</span>
+          <div><h4>Multiplataforma</h4><p>El mismo código funciona en Windows, macOS y Linux sin modificaciones. Write once, run anywhere.</p></div>
         </div>
-      </div>
-      <div class="li">
-        <span class="ico">🔋</span>
-        <div class="body">
-          <h4>"Batteries included"</h4>
-          <p>Librería estándar extensísima: JSON, HTTP, archivos, regex, criptografía, concurrencia y más.</p>
-        </div>
-      </div>
-      <div class="li">
-        <span class="ico">🖥️</span>
-        <div class="body">
-          <h4>Multiplataforma</h4>
-          <p>El mismo código funciona en Windows, macOS y Linux sin modificaciones. Write once, run anywhere.</p>
-        </div>
-      </div>
-      <div class="li">
-        <span class="ico">🤝</span>
-        <div class="body">
-          <h4>Comunidad masiva</h4>
-          <p>Millones de desarrolladores, documentación excelente, y respuestas a cualquier pregunta en Stack Overflow.</p>
+        <div class="orow">
+          <span class="oi">🤝</span>
+          <div><h4>Comunidad masiva</h4><p>Millones de desarrolladores, documentación excelente, y respuestas a cualquier pregunta en Stack Overflow.</p></div>
         </div>
       </div>
     </div>
@@ -584,52 +549,34 @@ personas = [<span class="st">"Ana"</span>, <span class="st">"Luis"</span>, <span
 
   <!-- 4 · VENTAJAS -->
   <section class="slide" data-i="4">
-    <h2 class="slide-title">Ventajas de Python</h2>
-    <div class="two-col">
-      <div class="list">
-        <div class="li">
-          <span class="ico">📈</span>
-          <div class="body">
-            <h4>Curva de aprendizaje baja</h4>
-            <p>Ideal para principiantes. Lo básico se aprende en días. La mayoría de universidades lo eligen como primer lenguaje.</p>
-          </div>
+    <h2 class="stitle">Ventajas de Python</h2>
+    <div class="open-2col">
+      <div class="open-rows">
+        <div class="orow">
+          <span class="oi">📈</span>
+          <div><h4>Curva de aprendizaje baja</h4><p>Ideal para principiantes. Lo básico se aprende en días. La mayoría de universidades lo eligen como primer lenguaje.</p></div>
         </div>
-        <div class="li">
-          <span class="ico">⚡</span>
-          <div class="body">
-            <h4>Alta productividad del desarrollador</h4>
-            <p>Menos líneas de código para el mismo resultado. FastAPI + Pydantic requiere ~30% menos código que Java Spring.</p>
-          </div>
+        <div class="orow">
+          <span class="oi">⚡</span>
+          <div><h4>Alta productividad del desarrollador</h4><p>Menos líneas de código para el mismo resultado. FastAPI + Pydantic requiere ~30% menos código que Java Spring.</p></div>
         </div>
-        <div class="li">
-          <span class="ico">🧪</span>
-          <div class="body">
-            <h4>Excelente para prototipado</h4>
-            <p>Desde idea hasta MVP funcional en horas. Jupyter Notebooks permiten experimentación interactiva e inmediata.</p>
-          </div>
+        <div class="orow">
+          <span class="oi">🧪</span>
+          <div><h4>Excelente para prototipado</h4><p>Desde idea hasta MVP funcional en horas. Jupyter Notebooks permiten experimentación interactiva e inmediata.</p></div>
         </div>
       </div>
-      <div class="list">
-        <div class="li">
-          <span class="ico">🌐</span>
-          <div class="body">
-            <h4>Ecosistema enorme</h4>
-            <p>PyPI tiene más de 500,000 paquetes. Casi cualquier problema tiene ya una librería madura y bien mantenida.</p>
-          </div>
+      <div class="open-rows">
+        <div class="orow">
+          <span class="oi">🌐</span>
+          <div><h4>Ecosistema enorme</h4><p>PyPI tiene más de 500,000 paquetes. Casi cualquier problema tiene ya una librería madura y bien mantenida.</p></div>
         </div>
-        <div class="li">
-          <span class="ico">🔗</span>
-          <div class="body">
-            <h4>Integración universal</h4>
-            <p>Se conecta fácilmente con C, Java, bases de datos, APIs REST, servicios cloud y hardware (IoT).</p>
-          </div>
+        <div class="orow">
+          <span class="oi">🔗</span>
+          <div><h4>Integración universal</h4><p>Se conecta fácilmente con C, Java, bases de datos, APIs REST, servicios cloud y hardware (IoT).</p></div>
         </div>
-        <div class="li">
-          <span class="ico">🎯</span>
-          <div class="body">
-            <h4>Mercado laboral fuerte</h4>
-            <p>Alta demanda en data science, ML, backend y automatización. Salarios consistentemente por encima del promedio.</p>
-          </div>
+        <div class="orow">
+          <span class="oi">🎯</span>
+          <div><h4>Mercado laboral fuerte</h4><p>Alta demanda en data science, ML, backend y automatización. Salarios consistentemente por encima del promedio.</p></div>
         </div>
       </div>
     </div>
@@ -637,16 +584,16 @@ personas = [<span class="st">"Ana"</span>, <span class="st">"Luis"</span>, <span
 
   <!-- 5 · ÁREAS DE APLICACIÓN -->
   <section class="slide" data-i="5">
-    <h2 class="slide-title">Áreas de Aplicación</h2>
-    <div class="grid c4" style="gap:12px">
-      <div class="card center"><div class="ci">🧠</div><h3>Machine Learning</h3><p>scikit-learn · TensorFlow · PyTorch · Keras</p></div>
-      <div class="card center"><div class="ci">🌐</div><h3>Desarrollo Web</h3><p>Django · FastAPI · Flask · Starlette</p></div>
-      <div class="card center"><div class="ci">📊</div><h3>Data Science</h3><p>pandas · NumPy · Matplotlib · Seaborn</p></div>
-      <div class="card center"><div class="ci">🤖</div><h3>Automatización</h3><p>Selenium · Ansible · Airflow · Celery</p></div>
-      <div class="card center"><div class="ci">🔒</div><h3>Ciberseguridad</h3><p>Scapy · Paramiko · Nmap · Impacket</p></div>
-      <div class="card center"><div class="ci">🎮</div><h3>Videojuegos</h3><p>Pygame · Ren'Py · Blender Scripts</p></div>
-      <div class="card center"><div class="ci">🔬</div><h3>Ciencia</h3><p>SciPy · BioPython · Astropy · SymPy</p></div>
-      <div class="card center"><div class="ci">☁️</div><h3>Cloud & DevOps</h3><p>AWS Lambda · GCP Functions · Terraform</p></div>
+    <h2 class="stitle">Áreas de Aplicación</h2>
+    <div class="area-grid">
+      <div class="area"><div class="ai">🧠</div><div><h3>Machine Learning</h3><p>scikit-learn · TensorFlow · PyTorch · Keras</p></div></div>
+      <div class="area"><div class="ai">🌐</div><div><h3>Desarrollo Web</h3><p>Django · FastAPI · Flask · Starlette</p></div></div>
+      <div class="area"><div class="ai">📊</div><div><h3>Data Science</h3><p>pandas · NumPy · Matplotlib · Seaborn</p></div></div>
+      <div class="area"><div class="ai">🤖</div><div><h3>Automatización</h3><p>Selenium · Ansible · Airflow · Celery</p></div></div>
+      <div class="area"><div class="ai">🔒</div><div><h3>Ciberseguridad</h3><p>Scapy · Paramiko · Nmap · Impacket</p></div></div>
+      <div class="area"><div class="ai">🎮</div><div><h3>Videojuegos</h3><p>Pygame · Ren'Py · Blender Scripts</p></div></div>
+      <div class="area"><div class="ai">🔬</div><div><h3>Ciencia</h3><p>SciPy · BioPython · Astropy · SymPy</p></div></div>
+      <div class="area"><div class="ai">☁️</div><div><h3>Cloud & DevOps</h3><p>AWS Lambda · GCP Functions · Terraform</p></div></div>
     </div>
   </section>
 
