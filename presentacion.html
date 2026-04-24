@@ -5,25 +5,20 @@
   <meta name="viewport" content="width=1280, initial-scale=1">
   <title>Python — Presentación</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg: #080d1a;
-      --surface: #0f1729;
-      --surface2: #1a2340;
-      --blue: #4584b6;
-      --blue-light: #6aa3d4;
-      --yellow: #ffd43b;
-      --yellow-dim: #c9a62e;
-      --text: #eef2f8;
-      --muted: #7a90b0;
-      --border: #1e2d47;
-      --green: #22c55e;
-      --red: #ef4444;
-      --orange: #f97316;
-      --r: 14px;
+      --bg:      #0c0c0c;
+      --surface: #161616;
+      --dim:     #222222;
+      --border:  #2e2e2e;
+      --crimson: #A51C30;
+      --text:    #ededed;
+      --sub:     #999999;
+      --faint:   #555555;
     }
 
     html, body {
@@ -32,413 +27,312 @@
       background: var(--bg);
       color: var(--text);
       font-family: 'Inter', sans-serif;
-      font-size: 16px;
+      -webkit-font-smoothing: antialiased;
     }
 
-    /* ── Top accent bar ── */
-    .top-bar {
+    /* ── Chrome ── */
+    #top-rule {
       position: fixed; top: 0; left: 0; right: 0; height: 3px;
-      background: linear-gradient(90deg, var(--blue) 0%, var(--yellow) 100%);
-      z-index: 200;
+      background: var(--crimson); z-index: 300;
     }
 
-    /* ── Slides container ── */
-    #deck {
-      width: 100vw; height: 100vh;
-      position: relative;
+    #bottom-bar {
+      position: fixed; bottom: 0; left: 0; right: 0; height: 2px;
+      background: var(--dim); z-index: 300;
     }
 
-    .slide {
-      position: absolute; inset: 0;
-      display: flex; flex-direction: column;
-      align-items: flex-start; justify-content: center;
-      padding: 64px 96px;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity .45s ease, transform .45s ease;
-      transform: translateX(48px);
-      will-change: opacity, transform;
-    }
-
-    .slide.active {
-      opacity: 1;
-      transform: translateX(0);
-      pointer-events: all;
-    }
-
-    .slide.exit {
-      opacity: 0;
-      transform: translateX(-48px);
-    }
-
-    /* ── Progress bar ── */
-    #progress {
-      position: fixed; bottom: 0; left: 0; right: 0; height: 3px;
-      background: var(--surface2); z-index: 200;
-    }
     #progress-fill {
-      height: 100%;
-      background: linear-gradient(90deg, var(--blue), var(--yellow));
+      height: 100%; background: var(--crimson);
       transition: width .4s ease;
     }
 
-    /* ── Counter & status ── */
     #counter {
-      position: fixed; bottom: 14px; right: 28px;
-      font-size: 12px; color: var(--muted); z-index: 200;
-      font-variant-numeric: tabular-nums;
+      position: fixed; bottom: 14px; right: 32px;
+      font-size: 11px; color: var(--faint); z-index: 300;
+      font-variant-numeric: tabular-nums; letter-spacing: .5px;
     }
 
     #conn-status {
-      position: fixed; top: 18px; right: 24px;
-      display: flex; align-items: center; gap: 7px;
-      font-size: 12px; color: var(--muted); z-index: 200;
+      position: fixed; top: 16px; right: 24px;
+      display: flex; align-items: center; gap: 6px;
+      font-size: 11px; color: var(--faint); z-index: 300;
     }
 
     #conn-dot {
-      width: 7px; height: 7px; border-radius: 50%;
-      background: var(--red);
-      transition: background .3s;
+      width: 6px; height: 6px; border-radius: 50%;
+      background: #444; transition: background .3s;
     }
-
-    #conn-dot.on { background: var(--green); }
+    #conn-dot.on { background: #4ade80; }
 
     /* ── Nav arrows ── */
     .nav-btn {
       position: fixed; top: 50%; transform: translateY(-50%);
-      background: rgba(255,255,255,.04);
-      border: 1px solid var(--border);
-      border-radius: 50%; width: 44px; height: 44px;
-      display: flex; align-items: center; justify-content: center;
-      cursor: pointer; color: var(--muted); font-size: 22px;
-      transition: all .2s; z-index: 200; user-select: none;
+      width: 40px; height: 40px;
+      background: none; border: none;
+      color: var(--dim); font-size: 30px;
+      cursor: pointer; z-index: 300; user-select: none;
+      transition: color .2s;
     }
-    .nav-btn:hover { background: rgba(255,255,255,.09); color: var(--text); border-color: var(--blue); }
-    #btn-prev { left: 16px; }
-    #btn-next { right: 16px; }
+    .nav-btn:hover { color: var(--faint); }
+    #btn-prev { left: 10px; }
+    #btn-next { right: 10px; }
 
-    /* intentionally empty – code badge removed */
-
-    /* ── Key hint ── */
     #key-hint {
       position: fixed; bottom: 14px; left: 50%;
       transform: translateX(-50%);
-      font-size: 11px; color: var(--muted); opacity: .4; z-index: 200;
+      font-size: 10px; color: var(--dim); z-index: 300;
+      letter-spacing: 1px; text-transform: uppercase;
     }
 
-    /* ════════════════════════════════════════
-       SLIDE DESIGN TOKENS
-    ════════════════════════════════════════ */
+    /* ── Slides ── */
+    #deck { width: 100vw; height: 100vh; position: relative; }
 
-    h2.slide-title {
-      font-size: 34px; font-weight: 700;
-      margin-bottom: 36px;
-      align-self: flex-start;
-      padding-bottom: 14px;
-      border-bottom: 2px solid var(--blue);
-      width: 100%;
+    .slide {
+      position: absolute; inset: 0;
+      display: flex; flex-direction: column;
+      align-items: flex-start; justify-content: flex-start;
+      padding: 64px 88px 56px;
+      opacity: 0; pointer-events: none;
+      transition: opacity .38s ease, transform .38s ease;
+      transform: translateX(36px);
+    }
+    .slide.active { opacity: 1; transform: translateX(0); pointer-events: all; }
+    .slide.exit   { opacity: 0; transform: translateX(-36px); }
+
+    /* ────────────────────────────────
+       TYPOGRAPHY
+    ──────────────────────────────── */
+
+    /* Serif title with crimson underrule */
+    .st {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 44px; font-weight: 700;
+      color: var(--text); line-height: 1.1;
+      width: 100%; margin-bottom: 36px;
+      padding-bottom: 16px;
+      border-bottom: 1.5px solid var(--crimson);
+    }
+
+    /* Entry row */
+    .entries { display: flex; flex-direction: column; width: 100%; }
+
+    .entry {
+      display: flex; align-items: stretch;
+      padding: 17px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .entry:last-child { border-bottom: none; }
+
+    .ebar {
+      width: 2px; background: var(--crimson);
+      flex-shrink: 0; margin-right: 22px; border-radius: 1px;
+    }
+    .ebar.neg { background: #7f1d1d; }
+
+    .ehead {
+      font-size: 17px; font-weight: 600;
+      color: var(--text); margin-bottom: 5px; line-height: 1.3;
+    }
+
+    .ebody {
+      font-size: 14px; color: var(--sub); line-height: 1.75;
+    }
+
+    /* Two-column */
+    .col2 {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 0 64px; width: 100%;
     }
 
     /* ── Cover ── */
     .slide-cover {
-      background:
-        radial-gradient(ellipse 60% 60% at 50% 40%, #0e2248 0%, transparent 70%),
-        var(--bg);
-      text-align: center;
-      align-items: center;
+      justify-content: center;
+      padding-left: 120px;
+      border-left: 6px solid var(--crimson);
     }
 
-    .py-logo {
-      width: 96px; height: 96px; margin-bottom: 28px;
+    .cover-eyebrow {
+      font-size: 11px; font-weight: 500; letter-spacing: 3px;
+      text-transform: uppercase; color: var(--crimson); margin-bottom: 20px;
     }
 
-    .slide-cover h1 {
-      font-size: 88px; font-weight: 900;
-      line-height: 1;
-      background: linear-gradient(135deg, var(--blue-light) 20%, var(--yellow) 80%);
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-      background-clip: text;
-      margin-bottom: 14px;
+    .cover-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 100px; font-weight: 900; line-height: .92;
+      color: var(--text); margin-bottom: 24px;
     }
 
-    .slide-cover .subtitle {
-      font-size: 21px; color: var(--muted); font-weight: 300;
-      max-width: 560px;
+    .cover-sub {
+      font-size: 21px; color: var(--sub); font-weight: 300;
+      max-width: 520px; line-height: 1.55; margin-bottom: 40px;
     }
 
-    .chips { display: flex; gap: 12px; margin-top: 36px; flex-wrap: wrap; justify-content: center; }
+    .cover-rule { width: 56px; height: 2px; background: var(--crimson); margin-bottom: 22px; }
 
-    .chip {
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      border-radius: 100px; padding: 6px 16px;
-      font-size: 13px; color: var(--muted);
+    .cover-meta { font-size: 13px; color: var(--faint); line-height: 1.9; letter-spacing: .2px; }
+
+    /* ── Section divider ── */
+    .slide-divider {
+      background: var(--crimson);
+      justify-content: center;
     }
 
-    /* ── Section divider slide ── */
-    .slide-section {
-      background:
-        radial-gradient(ellipse 55% 55% at 50% 45%, #0d1f40 0%, transparent 70%),
-        var(--bg);
-      text-align: center;
-      align-items: center;
+    .div-label {
+      font-size: 11px; font-weight: 600; letter-spacing: 4px;
+      text-transform: uppercase; color: rgba(255,255,255,.45); margin-bottom: 22px;
     }
 
-    .section-label {
-      font-size: 12px; font-weight: 600; letter-spacing: 3px;
-      text-transform: uppercase; color: var(--blue);
-      margin-bottom: 16px;
+    .div-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 54px; font-weight: 700; line-height: 1.1;
+      color: #fff; max-width: 680px; margin-bottom: 24px;
     }
 
-    .slide-section h2 {
-      font-size: 50px; font-weight: 700; line-height: 1.12;
-      border: none; padding: 0; margin: 0; width: auto;
-      align-self: auto;
+    .div-sub {
+      font-size: 18px; color: rgba(255,255,255,.6);
+      font-weight: 300; max-width: 560px; line-height: 1.6;
     }
 
-    .slide-section .accent { color: var(--yellow); }
-
-    .slide-section .sub {
-      font-size: 18px; color: var(--muted); font-weight: 300;
-      max-width: 580px; margin-top: 20px; line-height: 1.6;
+    /* ── Code block ── */
+    .code {
+      background: #0a0a0a; border-left: 2px solid var(--crimson);
+      padding: 20px 24px; width: 100%;
+      font-family: 'Fira Code', 'Courier New', monospace;
+      font-size: 13px; line-height: 1.8; color: #ccc;
     }
+    .code .kw { color: #e06c75; }
+    .code .fn { color: #98c379; }
+    .code .st { color: #e5c07b; }
+    .code .cm { color: #4a4a4a; }
+    .code .nb { color: #61afef; }
 
-    /* ── Cards grid ── */
-    .grid {
-      display: grid; gap: 16px; width: 100%;
+    /* ── Stats ── */
+    .stats-row {
+      display: flex; gap: 48px;
+      padding-top: 20px; border-top: 1px solid var(--border);
     }
-    .grid.c2 { grid-template-columns: 1fr 1fr; }
-    .grid.c3 { grid-template-columns: 1fr 1fr 1fr; }
-    .grid.c4 { grid-template-columns: repeat(4, 1fr); }
-
-    .card {
-      background: var(--surface); border: 1px solid var(--border);
-      border-radius: var(--r); padding: 22px;
-      transition: border-color .2s;
+    .stat-num {
+      font-family: 'Playfair Display', serif;
+      font-size: 38px; font-weight: 700; color: var(--crimson); line-height: 1;
     }
-    .card:hover { border-color: var(--blue); }
-    .card .ci { font-size: 26px; margin-bottom: 10px; }
-    .card h3 { font-size: 15px; font-weight: 600; margin-bottom: 6px; }
-    .card p { font-size: 13px; color: var(--muted); line-height: 1.6; }
-
-    .card.center { text-align: center; }
-    .card.center h3 { font-size: 13px; }
-    .card.center p { font-size: 12px; margin-top: 4px; }
-
-    /* ── List items ── */
-    .list { display: flex; flex-direction: column; gap: 14px; width: 100%; }
-
-    .li {
-      display: flex; align-items: flex-start; gap: 16px;
-      background: var(--surface); border: 1px solid var(--border);
-      border-radius: var(--r); padding: 18px 22px;
-    }
-
-    .li .ico { font-size: 20px; flex-shrink: 0; margin-top: 2px; }
-    .li .body h4 { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
-    .li .body p { font-size: 13px; color: var(--muted); line-height: 1.55; }
-
-    /* ── Two column layout ── */
-    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; width: 100%; }
-
-    /* ── Highlight box ── */
-    .hbox {
-      background: linear-gradient(135deg, rgba(69,132,182,.08), rgba(255,212,59,.04));
-      border: 1px solid rgba(69,132,182,.25);
-      border-radius: var(--r); padding: 22px 26px; width: 100%;
-    }
-    .hbox p { font-size: 17px; line-height: 1.65; font-weight: 300; }
-    .hbox strong { color: var(--yellow); font-weight: 600; }
-
-    /* ── Open layout (sin recuadros) ── */
-    .stitle {
-      font-size: 46px; font-weight: 800; width: 100%;
-      margin-bottom: 32px; padding-bottom: 14px;
-      border-bottom: 3px solid var(--blue); line-height: 1.1;
-    }
-
-    .open-rows { display: flex; flex-direction: column; width: 100%; }
-
-    .open-2col {
-      display: grid; grid-template-columns: 1fr 1fr;
-      gap: 0 56px; width: 100%;
-    }
-
-    .slide-2col {
-      display: grid; grid-template-columns: 1fr 1fr;
-      gap: 48px; width: 100%;
-    }
-
-    .orow {
-      display: flex; align-items: flex-start; gap: 20px;
-      padding: 18px 0; border-bottom: 1px solid var(--border);
-    }
-    .orow:last-child { border-bottom: none; }
-    .orow .oi { font-size: 28px; flex-shrink: 0; margin-top: 3px; }
-    .orow h4 { font-size: 19px; font-weight: 700; color: var(--text); margin-bottom: 5px; }
-    .orow p { font-size: 14px; color: var(--muted); line-height: 1.7; }
-
-    .orow.pro { border-left: 3px solid var(--green); padding-left: 18px; }
-    .orow.con { border-left: 3px solid var(--red); padding-left: 18px; }
-    .orow.pro h4 { color: #86efac; }
-    .orow.con h4 { color: #fca5a5; }
+    .stat-lbl { font-size: 12px; color: var(--faint); margin-top: 4px; }
 
     /* ── Area grid ── */
     .area-grid {
       display: grid; grid-template-columns: repeat(4, 1fr);
-      gap: 24px 40px; width: 100%;
+      gap: 28px 52px; width: 100%;
     }
-    .area { display: flex; align-items: flex-start; gap: 16px; }
-    .area .ai { font-size: 32px; flex-shrink: 0; }
-    .area h3 { font-size: 17px; font-weight: 700; margin-bottom: 4px; }
-    .area p { font-size: 12px; color: var(--muted); line-height: 1.5; }
-
-    /* ── Code block ── */
-    .code {
-      background: #060a14; border: 1px solid var(--border);
-      border-radius: var(--r); padding: 20px 22px;
-      font-family: 'Fira Code', 'Courier New', monospace;
-      font-size: 13px; line-height: 1.7; color: #cdd6f4;
+    .area-item h3 {
+      font-size: 16px; font-weight: 600; color: var(--text);
+      margin-bottom: 7px; padding-bottom: 7px;
+      border-bottom: 1px solid var(--border);
     }
-    .code .kw { color: #cba6f7; }
-    .code .fn { color: #a6e3a1; }
-    .code .st { color: #f9e2af; }
-    .code .cm { color: #45475a; }
-    .code .nb { color: #89dceb; }
-
-    /* ── Stats ── */
-    .stats { display: flex; gap: 48px; margin-top: 8px; }
-    .stat .num { font-size: 44px; font-weight: 800; color: var(--blue-light); line-height: 1; }
-    .stat .lbl { font-size: 12px; color: var(--muted); margin-top: 4px; }
-
-    /* ── Pro/Con items ── */
-    .li.pro { border-left: 3px solid var(--green); }
-    .li.con { border-left: 3px solid var(--red); }
+    .area-item p { font-size: 12px; color: var(--sub); line-height: 1.7; }
 
     /* ── Verdict table ── */
-    .vtable {
-      width: 100%; border-collapse: collapse;
-      font-size: 13.5px; border-radius: var(--r); overflow: hidden;
-    }
-    .vtable thead tr { background: var(--surface2); }
+    .vtable { width: 100%; border-collapse: collapse; font-size: 14px; }
+    .vtable thead tr { background: var(--crimson); }
     .vtable th {
-      padding: 13px 18px; text-align: left;
+      padding: 13px 20px; text-align: left;
       font-size: 11px; font-weight: 600;
       text-transform: uppercase; letter-spacing: .8px;
-      color: var(--muted);
+      color: rgba(255,255,255,.8);
     }
     .vtable td {
-      padding: 13px 18px;
+      padding: 13px 20px; color: var(--text);
       border-bottom: 1px solid var(--border);
-      color: var(--text);
     }
     .vtable tbody tr:last-child td { border-bottom: none; }
-    .vtable tbody tr:hover { background: rgba(255,255,255,.02); }
+    .vtable tbody tr:nth-child(even) td { background: rgba(255,255,255,.02); }
 
-    .badge {
-      display: inline-block; padding: 3px 10px;
-      border-radius: 100px; font-size: 11px; font-weight: 600;
-    }
-    .badge.g { background: rgba(34,197,94,.12); color: #22c55e; }
-    .badge.r { background: rgba(239,68,68,.12); color: #ef4444; }
-    .badge.y { background: rgba(255,212,59,.12); color: var(--yellow); }
-    .badge.b { background: rgba(69,132,182,.12); color: var(--blue-light); }
+    .badge { font-size: 12px; font-weight: 600; }
+    .badge.g { color: #4ade80; }
+    .badge.r { color: #f87171; }
+    .badge.y { color: #facc15; }
+    .badge.b { color: #93c5fd; }
 
     /* ── Conclusion box ── */
     .conclusion {
-      background: linear-gradient(135deg, rgba(34,197,94,.06), rgba(69,132,182,.06));
-      border: 1px solid rgba(34,197,94,.2);
-      border-radius: var(--r); padding: 20px 24px;
-      width: 100%; margin-top: 18px;
+      margin-top: 18px; padding: 18px 24px;
+      border-left: 3px solid var(--crimson);
+      background: var(--surface);
     }
-    .conclusion p { font-size: 15px; line-height: 1.65; }
-    .conclusion strong { color: var(--green); }
+    .conclusion p { font-size: 15px; line-height: 1.75; color: var(--sub); }
+    .conclusion strong { color: var(--text); font-weight: 600; }
+
+    /* ── Lead paragraph ── */
+    .lead {
+      font-size: 18px; color: var(--sub); font-weight: 300;
+      line-height: 1.7; margin-bottom: 28px;
+      padding-bottom: 24px; border-bottom: 1px solid var(--border);
+    }
+    .lead strong { color: var(--text); font-weight: 500; }
+
+    /* slide 1 two-col helper */
+    .slide-2col {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 0 56px; width: 100%;
+    }
   </style>
 </head>
 <body>
 
-<div class="top-bar"></div>
+<div id="top-rule"></div>
 
-<!-- Connection status -->
 <div id="conn-status">
   <div id="conn-dot"></div>
-  <span id="conn-label">Sin control remoto</span>
+  <span id="conn-label">—</span>
 </div>
 
-<!-- Nav buttons -->
 <div class="nav-btn" id="btn-prev" onclick="go(-1)">‹</div>
 <div class="nav-btn" id="btn-next" onclick="go(1)">›</div>
 
-<!-- Progress -->
-<div id="progress"><div id="progress-fill"></div></div>
-
-<!-- Counter -->
+<div id="bottom-bar"><div id="progress-fill"></div></div>
 <div id="counter">1 / 11</div>
+<div id="key-hint">← →  Espacio</div>
 
-<!-- Key hint -->
-<div id="key-hint">← → Espacio para navegar</div>
-
-<!-- ═══════════════════════════════════════
-     SLIDES
-═══════════════════════════════════════ -->
 <div id="deck">
 
   <!-- 0 · PORTADA -->
   <section class="slide slide-cover active" data-i="0">
-    <svg class="py-logo" viewBox="0 0 110 110" xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <linearGradient id="g1" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stop-color="#4584b6"/>
-          <stop offset="100%" stop-color="#6aa3d4"/>
-        </linearGradient>
-        <linearGradient id="g2" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stop-color="#ffd43b"/>
-          <stop offset="100%" stop-color="#ffc107"/>
-        </linearGradient>
-      </defs>
-      <path d="M54 6C29 6 31 17 31 17L31 28H55V31H19S6 29 6 55s12 22 12 22h9V66s-1-12 12-12h26s12 0 12-12V20S79 6 54 6Z" fill="url(#g1)"/>
-      <circle cx="41.5" cy="20" r="4" fill="white" opacity=".75"/>
-      <path d="M56 104C81 104 79 93 79 93L79 82H55V79H91S104 81 104 55 92 33 92 33h-9V44s1 12-12 12H45s-12 0-12 12V90S33 104 56 104Z" fill="url(#g2)"/>
-      <circle cx="68.5" cy="90" r="4" fill="white" opacity=".75"/>
-    </svg>
-    <h1>Python</h1>
-    <p class="subtitle">El lenguaje que democratizó la programación</p>
-    <div class="chips">
-      <span class="chip">Creado en 1991</span>
-      <span class="chip">Open Source</span>
-      <span class="chip">Propósito General</span>
-      <span class="chip">#1 en popularidad</span>
+    <div class="cover-eyebrow">Lenguajes de Programación · 2026</div>
+    <div class="cover-title">Python</div>
+    <div class="cover-sub">El lenguaje que democratizó la programación, la ciencia de datos y la inteligencia artificial.</div>
+    <div class="cover-rule"></div>
+    <div class="cover-meta">
+      Interpretado · Propósito general · Open Source<br>
+      Creado por Guido van Rossum · 1991
     </div>
   </section>
 
   <!-- 1 · ¿QUÉ ES PYTHON? -->
   <section class="slide" data-i="1">
-    <h2 class="stitle">¿Qué es Python?</h2>
+    <h2 class="st">¿Qué es Python?</h2>
     <div class="slide-2col">
-      <div class="open-rows">
-        <div class="orow">
-          <span class="oi">🧑‍💻</span>
+      <div class="entries">
+        <div class="entry">
+          <div class="ebar"></div>
           <div>
-            <h4>Guido van Rossum · 1991</h4>
-            <p>Inspirado en ABC y Modula-3. El nombre viene de Monty Python, no de la serpiente. Mantenido por la Python Software Foundation.</p>
+            <div class="ehead">Guido van Rossum · 1991</div>
+            <div class="ebody">Inspirado en ABC y Modula-3. El nombre proviene de Monty Python, no de la serpiente. Mantenido por la Python Software Foundation.</div>
           </div>
         </div>
-        <div class="orow">
-          <span class="oi">📖</span>
+        <div class="entry">
+          <div class="ebar"></div>
           <div>
-            <h4>The Zen of Python</h4>
-            <p>"Simple es mejor que complejo. La legibilidad cuenta." — filosofía central que define cómo se escribe el lenguaje.</p>
+            <div class="ehead">The Zen of Python</div>
+            <div class="ebody">"Simple es mejor que complejo. La legibilidad cuenta." Filosofía central que define cómo se escribe y se lee el lenguaje.</div>
           </div>
         </div>
-        <div class="orow">
-          <span class="oi">🌍</span>
+        <div class="entry">
+          <div class="ebar"></div>
           <div>
-            <h4>Lenguaje #1 del mundo</h4>
-            <p>Índice TIOBE y Stack Overflow Developer Survey lo ubican en el primer lugar desde 2021 de forma consecutiva.</p>
+            <div class="ehead">Lenguaje #1 del mundo</div>
+            <div class="ebody">Índice TIOBE y Stack Overflow Developer Survey lo ubican en primer lugar de forma consecutiva desde 2021.</div>
           </div>
         </div>
       </div>
-      <div style="display:flex;flex-direction:column;gap:24px">
+      <div style="display:flex;flex-direction:column;gap:28px">
         <div class="code">
 <span class="cm"># Python en pocas líneas</span><br>
 <span class="kw">def</span> <span class="fn">saludar</span>(nombre):<br>
@@ -448,10 +342,10 @@ personas = [<span class="st">"Ana"</span>, <span class="st">"Luis"</span>, <span
 <span class="kw">for</span> p <span class="kw">in</span> personas:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="nb">print</span>(saludar(p))
         </div>
-        <div class="stats">
-          <div class="stat"><div class="num">500K+</div><div class="lbl">Paquetes en PyPI</div></div>
-          <div class="stat"><div class="num">30+</div><div class="lbl">Años de historia</div></div>
-          <div class="stat"><div class="num">#1</div><div class="lbl">TIOBE 2024</div></div>
+        <div class="stats-row">
+          <div><div class="stat-num">500K+</div><div class="stat-lbl">Paquetes en PyPI</div></div>
+          <div><div class="stat-num">30+</div><div class="stat-lbl">Años de historia</div></div>
+          <div><div class="stat-num">#1</div><div class="stat-lbl">TIOBE 2024</div></div>
         </div>
       </div>
     </div>
@@ -459,34 +353,34 @@ personas = [<span class="st">"Ana"</span>, <span class="st">"Luis"</span>, <span
 
   <!-- 2 · PARA QUÉ SE UTILIZA -->
   <section class="slide" data-i="2">
-    <h2 class="stitle">¿Para qué se utiliza?</h2>
-    <div class="open-2col">
-      <div class="open-rows">
-        <div class="orow">
-          <span class="oi">🌐</span>
-          <div><h4>Desarrollo Web</h4><p>Django, FastAPI y Flask para construir APIs y aplicaciones web robustas y escalables.</p></div>
+    <h2 class="st">¿Para qué se utiliza?</h2>
+    <div class="col2">
+      <div class="entries">
+        <div class="entry">
+          <div class="ebar"></div>
+          <div><div class="ehead">Desarrollo Web</div><div class="ebody">Django, FastAPI y Flask para construir APIs y aplicaciones web robustas, escalables y de alto rendimiento.</div></div>
         </div>
-        <div class="orow">
-          <span class="oi">🤖</span>
-          <div><h4>Inteligencia Artificial</h4><p>TensorFlow, PyTorch, scikit-learn: el ecosistema de IA más completo del mundo.</p></div>
+        <div class="entry">
+          <div class="ebar"></div>
+          <div><div class="ehead">Inteligencia Artificial</div><div class="ebody">TensorFlow, PyTorch y scikit-learn conforman el ecosistema de IA más completo y activo del mundo.</div></div>
         </div>
-        <div class="orow">
-          <span class="oi">📊</span>
-          <div><h4>Análisis de Datos</h4><p>pandas, NumPy, Matplotlib y Jupyter Notebooks para ciencia de datos.</p></div>
+        <div class="entry">
+          <div class="ebar"></div>
+          <div><div class="ehead">Análisis de Datos</div><div class="ebody">pandas, NumPy, Matplotlib y Jupyter Notebooks como estándar de facto para ciencia de datos.</div></div>
         </div>
       </div>
-      <div class="open-rows">
-        <div class="orow">
-          <span class="oi">⚙️</span>
-          <div><h4>Automatización</h4><p>Scripts, bots, tareas programadas y automatización de sistemas operativos.</p></div>
+      <div class="entries">
+        <div class="entry">
+          <div class="ebar"></div>
+          <div><div class="ehead">Automatización</div><div class="ebody">Scripts, bots, tareas programadas y automatización de sistemas operativos y flujos de trabajo.</div></div>
         </div>
-        <div class="orow">
-          <span class="oi">🔒</span>
-          <div><h4>Ciberseguridad</h4><p>Pentesting, análisis forense y herramientas profesionales como Scapy y Nmap.</p></div>
+        <div class="entry">
+          <div class="ebar"></div>
+          <div><div class="ehead">Ciberseguridad</div><div class="ebody">Pentesting, análisis forense y herramientas profesionales como Scapy, Paramiko y Nmap.</div></div>
         </div>
-        <div class="orow">
-          <span class="oi">☁️</span>
-          <div><h4>DevOps & Cloud</h4><p>Ansible, AWS Lambda, GCP Functions y scripts de infraestructura.</p></div>
+        <div class="entry">
+          <div class="ebar"></div>
+          <div><div class="ehead">DevOps & Cloud</div><div class="ebody">Ansible, AWS Lambda, GCP Functions y scripts de infraestructura como código.</div></div>
         </div>
       </div>
     </div>
@@ -494,34 +388,34 @@ personas = [<span class="st">"Ana"</span>, <span class="st">"Luis"</span>, <span
 
   <!-- 3 · CARACTERÍSTICAS -->
   <section class="slide" data-i="3">
-    <h2 class="stitle">Características de Python</h2>
-    <div class="open-2col">
-      <div class="open-rows">
-        <div class="orow">
-          <span class="oi">✍️</span>
-          <div><h4>Sintaxis legible y limpia</h4><p>Usa indentación obligatoria. El código Python se lee casi como pseudocódigo — fácil de mantener y auditar.</p></div>
+    <h2 class="st">Características de Python</h2>
+    <div class="col2">
+      <div class="entries">
+        <div class="entry">
+          <div class="ebar"></div>
+          <div><div class="ehead">Sintaxis legible y limpia</div><div class="ebody">Usa indentación obligatoria. El código se lee casi como pseudocódigo — fácil de mantener, auditar y colaborar.</div></div>
         </div>
-        <div class="orow">
-          <span class="oi">🔄</span>
-          <div><h4>Tipado dinámico</h4><p>No es necesario declarar tipos. Las variables asumen el tipo de su valor en tiempo de ejecución.</p></div>
+        <div class="entry">
+          <div class="ebar"></div>
+          <div><div class="ehead">Tipado dinámico</div><div class="ebody">No es necesario declarar tipos. Las variables asumen el tipo de su valor en tiempo de ejecución.</div></div>
         </div>
-        <div class="orow">
-          <span class="oi">🧩</span>
-          <div><h4>Multiparadigma</h4><p>Soporta programación orientada a objetos, funcional e imperativa de forma natural y simultánea.</p></div>
+        <div class="entry">
+          <div class="ebar"></div>
+          <div><div class="ehead">Multiparadigma</div><div class="ebody">Soporta programación orientada a objetos, funcional e imperativa de forma natural y simultánea.</div></div>
         </div>
       </div>
-      <div class="open-rows">
-        <div class="orow">
-          <span class="oi">🔋</span>
-          <div><h4>"Batteries included"</h4><p>Librería estándar extensísima: JSON, HTTP, archivos, regex, criptografía, concurrencia y más.</p></div>
+      <div class="entries">
+        <div class="entry">
+          <div class="ebar"></div>
+          <div><div class="ehead">"Batteries Included"</div><div class="ebody">Librería estándar extensísima: JSON, HTTP, archivos, regex, criptografía, concurrencia y mucho más.</div></div>
         </div>
-        <div class="orow">
-          <span class="oi">🖥️</span>
-          <div><h4>Multiplataforma</h4><p>El mismo código funciona en Windows, macOS y Linux sin modificaciones. Write once, run anywhere.</p></div>
+        <div class="entry">
+          <div class="ebar"></div>
+          <div><div class="ehead">Multiplataforma</div><div class="ebody">El mismo código corre en Windows, macOS y Linux sin modificaciones. Write once, run anywhere.</div></div>
         </div>
-        <div class="orow">
-          <span class="oi">🤝</span>
-          <div><h4>Comunidad masiva</h4><p>Millones de desarrolladores, documentación excelente, y respuestas a cualquier pregunta en Stack Overflow.</p></div>
+        <div class="entry">
+          <div class="ebar"></div>
+          <div><div class="ehead">Comunidad masiva</div><div class="ebody">Millones de desarrolladores, documentación excelente y respuestas disponibles para cualquier problema.</div></div>
         </div>
       </div>
     </div>
@@ -529,34 +423,34 @@ personas = [<span class="st">"Ana"</span>, <span class="st">"Luis"</span>, <span
 
   <!-- 4 · VENTAJAS -->
   <section class="slide" data-i="4">
-    <h2 class="stitle">Ventajas de Python</h2>
-    <div class="open-2col">
-      <div class="open-rows">
-        <div class="orow">
-          <span class="oi">📈</span>
-          <div><h4>Curva de aprendizaje baja</h4><p>Ideal para principiantes. Lo básico se aprende en días. La mayoría de universidades lo eligen como primer lenguaje.</p></div>
+    <h2 class="st">Ventajas de Python</h2>
+    <div class="col2">
+      <div class="entries">
+        <div class="entry">
+          <div class="ebar"></div>
+          <div><div class="ehead">Curva de aprendizaje baja</div><div class="ebody">Lo básico se aprende en días. Primera opción en universidades como lenguaje introductorio a la programación.</div></div>
         </div>
-        <div class="orow">
-          <span class="oi">⚡</span>
-          <div><h4>Alta productividad del desarrollador</h4><p>Menos líneas de código para el mismo resultado. FastAPI + Pydantic requiere ~30% menos código que Java Spring.</p></div>
+        <div class="entry">
+          <div class="ebar"></div>
+          <div><div class="ehead">Alta productividad del desarrollador</div><div class="ebody">Menos líneas de código para el mismo resultado. FastAPI + Pydantic requiere ~30% menos código que Java Spring.</div></div>
         </div>
-        <div class="orow">
-          <span class="oi">🧪</span>
-          <div><h4>Excelente para prototipado</h4><p>Desde idea hasta MVP funcional en horas. Jupyter Notebooks permiten experimentación interactiva e inmediata.</p></div>
+        <div class="entry">
+          <div class="ebar"></div>
+          <div><div class="ehead">Excelente para prototipado</div><div class="ebody">De idea a MVP funcional en horas. Jupyter Notebooks permiten experimentación interactiva e inmediata.</div></div>
         </div>
       </div>
-      <div class="open-rows">
-        <div class="orow">
-          <span class="oi">🌐</span>
-          <div><h4>Ecosistema enorme</h4><p>PyPI tiene más de 500,000 paquetes. Casi cualquier problema tiene ya una librería madura y bien mantenida.</p></div>
+      <div class="entries">
+        <div class="entry">
+          <div class="ebar"></div>
+          <div><div class="ehead">Ecosistema enorme</div><div class="ebody">PyPI supera los 500,000 paquetes. Prácticamente cualquier problema tiene ya una solución madura.</div></div>
         </div>
-        <div class="orow">
-          <span class="oi">🔗</span>
-          <div><h4>Integración universal</h4><p>Se conecta fácilmente con C, Java, bases de datos, APIs REST, servicios cloud y hardware (IoT).</p></div>
+        <div class="entry">
+          <div class="ebar"></div>
+          <div><div class="ehead">Integración universal</div><div class="ebody">Se conecta con C, Java, bases de datos, APIs REST, servicios cloud y hardware (IoT) sin fricciones.</div></div>
         </div>
-        <div class="orow">
-          <span class="oi">🎯</span>
-          <div><h4>Mercado laboral fuerte</h4><p>Alta demanda en data science, ML, backend y automatización. Salarios consistentemente por encima del promedio.</p></div>
+        <div class="entry">
+          <div class="ebar"></div>
+          <div><div class="ehead">Mercado laboral fuerte</div><div class="ebody">Alta demanda en data science, ML, backend y automatización. Salarios consistentemente por encima del promedio.</div></div>
         </div>
       </div>
     </div>
@@ -564,97 +458,97 @@ personas = [<span class="st">"Ana"</span>, <span class="st">"Luis"</span>, <span
 
   <!-- 5 · ÁREAS DE APLICACIÓN -->
   <section class="slide" data-i="5">
-    <h2 class="stitle">Áreas de Aplicación</h2>
+    <h2 class="st">Áreas de Aplicación</h2>
     <div class="area-grid">
-      <div class="area"><div class="ai">🧠</div><div><h3>Machine Learning</h3><p>scikit-learn · TensorFlow · PyTorch · Keras</p></div></div>
-      <div class="area"><div class="ai">🌐</div><div><h3>Desarrollo Web</h3><p>Django · FastAPI · Flask · Starlette</p></div></div>
-      <div class="area"><div class="ai">📊</div><div><h3>Data Science</h3><p>pandas · NumPy · Matplotlib · Seaborn</p></div></div>
-      <div class="area"><div class="ai">🤖</div><div><h3>Automatización</h3><p>Selenium · Ansible · Airflow · Celery</p></div></div>
-      <div class="area"><div class="ai">🔒</div><div><h3>Ciberseguridad</h3><p>Scapy · Paramiko · Nmap · Impacket</p></div></div>
-      <div class="area"><div class="ai">🎮</div><div><h3>Videojuegos</h3><p>Pygame · Ren'Py · Blender Scripts</p></div></div>
-      <div class="area"><div class="ai">🔬</div><div><h3>Ciencia</h3><p>SciPy · BioPython · Astropy · SymPy</p></div></div>
-      <div class="area"><div class="ai">☁️</div><div><h3>Cloud & DevOps</h3><p>AWS Lambda · GCP Functions · Terraform</p></div></div>
+      <div class="area-item"><h3>Machine Learning</h3><p>scikit-learn · TensorFlow · PyTorch · Keras · Hugging Face</p></div>
+      <div class="area-item"><h3>Desarrollo Web</h3><p>Django · FastAPI · Flask · Starlette · Tornado</p></div>
+      <div class="area-item"><h3>Data Science</h3><p>pandas · NumPy · Matplotlib · Seaborn · Plotly</p></div>
+      <div class="area-item"><h3>Automatización</h3><p>Selenium · Ansible · Apache Airflow · Celery</p></div>
+      <div class="area-item"><h3>Ciberseguridad</h3><p>Scapy · Paramiko · Nmap · Impacket · Volatility</p></div>
+      <div class="area-item"><h3>Videojuegos</h3><p>Pygame · Ren'Py · Panda3D · Blender (scripting)</p></div>
+      <div class="area-item"><h3>Ciencia & Academía</h3><p>SciPy · BioPython · Astropy · SymPy · OpenCV</p></div>
+      <div class="area-item"><h3>Cloud & DevOps</h3><p>AWS Lambda · GCP Functions · Terraform · Pulumi</p></div>
     </div>
   </section>
 
-  <!-- 6 · SECCIÓN: ANÁLISIS -->
-  <section class="slide slide-section" data-i="6">
-    <div class="section-label">Análisis Final</div>
-    <h2>¿Podría nuestro proyecto<br>desarrollarse en <span class="accent">Python</span>?</h2>
-    <p class="sub">Evaluación técnica honesta: ventajas, dificultades y veredicto</p>
+  <!-- 6 · SECCIÓN ANÁLISIS -->
+  <section class="slide slide-divider" data-i="6">
+    <div class="div-label">Análisis Final</div>
+    <div class="div-title">¿Podría nuestro proyecto desarrollarse en Python?</div>
+    <div class="div-sub">Evaluación técnica: ventajas, dificultades y veredicto comparativo</div>
   </section>
 
   <!-- 7 · CONTEXTO DEL PROYECTO -->
   <section class="slide" data-i="7">
-    <h2 class="stitle">Contexto del Proyecto</h2>
-    <p style="font-size:18px;color:var(--muted);margin-bottom:28px;line-height:1.65">
-      <strong style="color:var(--yellow)">SlideHub</strong> es un sistema de <strong style="color:var(--text)">control de diapositivas en tiempo real</strong> construido con <strong style="color:var(--blue-light)">Java 21 + Spring Boot</strong>, con múltiples pantallas sincronizadas, control remoto desde el smartphone, notas del presentador generadas con IA y autenticación OAuth2.
+    <h2 class="st">Contexto del Proyecto</h2>
+    <p class="lead">
+      El proyecto es una <strong>aplicación móvil multiplataforma</strong> desarrollada con <strong>Expo (React Native)</strong>, con interfaces nativas para iOS y Android, navegación, APIs REST, autenticación y notificaciones push.
     </p>
-    <div class="open-rows">
-      <div class="orow">
-        <span class="oi">🖥️</span>
-        <div><h4>Multi-pantalla en tiempo real</h4><p>Sincronización de slides vía Redis y polling. Control remoto táctil con feedback háptico desde el smartphone — sin depender de WebSockets externos.</p></div>
+    <div class="entries">
+      <div class="entry">
+        <div class="ebar"></div>
+        <div><div class="ehead">UI Nativa para iOS y Android</div><div class="ebody">Expo + React Native renderiza componentes verdaderamente nativos para ambas plataformas desde una única base de código JavaScript/TypeScript.</div></div>
       </div>
-      <div class="orow">
-        <span class="oi">🤖</span>
-        <div><h4>IA integrada (Gemini + Groq)</h4><p>Gemini Vision analiza slides visualmente para generar notas del presentador. Groq provee transcripción de audio (Whisper) y respuestas contextuales en tiempo real.</p></div>
+      <div class="entry">
+        <div class="ebar"></div>
+        <div><div class="ehead">APIs, Autenticación y Servicios Externos</div><div class="ebody">Integración con servicios REST, OAuth2, acceso a cámara y sensores nativos, y notificaciones push vía Expo SDK.</div></div>
       </div>
-      <div class="orow">
-        <span class="oi">🗄️</span>
-        <div><h4>Persistencia híbrida + Deploy en Render</h4><p>PostgreSQL para usuarios y sesiones, Redis para estado en vivo, MongoDB para notas IA. Assets en Amazon S3. Desplegado como monolito modular en Render.</p></div>
+      <div class="entry">
+        <div class="ebar"></div>
+        <div><div class="ehead">OTA Updates con Expo EAS</div><div class="ebody">Actualizaciones instantáneas sin revisión de App Store ni Google Play — ciclo de iteración acelerado respecto al modelo nativo tradicional.</div></div>
       </div>
     </div>
   </section>
 
   <!-- 8 · VENTAJAS EN PYTHON -->
   <section class="slide" data-i="8">
-    <h2 class="stitle">Ventajas si se usara Python</h2>
-    <div class="open-rows">
-      <div class="orow pro">
-        <span class="oi">🤖</span>
-        <div><h4>Ecosistema de IA sin rival</h4><p>SDKs oficiales de Gemini, OpenAI y Groq disponibles en pip. Reduce el boilerplate a cero vs. llamadas HTTP manuales desde JavaScript.</p></div>
+    <h2 class="st">Ventajas si se desarrollara en Python</h2>
+    <div class="entries">
+      <div class="entry">
+        <div class="ebar"></div>
+        <div><div class="ehead">Ecosistema de IA sin rival</div><div class="ebody">SDKs oficiales de Gemini, OpenAI y Groq disponibles vía pip. Elimina el boilerplate de llamadas HTTP manuales presentes en la implementación JavaScript actual.</div></div>
       </div>
-      <div class="orow pro">
-        <span class="oi">⚡</span>
-        <div><h4>Prototipado de backend ultra-rápido</h4><p>FastAPI + Pydantic permiten definir modelos y endpoints REST funcionales en horas. Para iterar en lógica de negocio, Python reduce la fricción significativamente.</p></div>
+      <div class="entry">
+        <div class="ebar"></div>
+        <div><div class="ehead">Prototipado de backend ultra-rápido</div><div class="ebody">FastAPI + Pydantic permiten definir modelos y endpoints REST funcionales en pocas horas. La fricción de iteración en lógica de negocio es significativamente menor.</div></div>
       </div>
-      <div class="orow pro">
-        <span class="oi">📜</span>
-        <div><h4>Automatización y scripting de primer nivel</h4><p>Procesamiento de datos, reportes, migraciones y seeds de base de datos son más simples y legibles en Python que en JS/TS.</p></div>
+      <div class="entry">
+        <div class="ebar"></div>
+        <div><div class="ehead">Automatización y scripting de primer nivel</div><div class="ebody">Procesamiento de datos, reportes, migraciones y seeds de base de datos son más concisos y legibles en Python que en JavaScript/TypeScript.</div></div>
       </div>
-      <div class="orow pro">
-        <span class="oi">💡</span>
-        <div><h4>Menor curva de entrada para el equipo</h4><p>Para un proyecto académico, Python reduce la complejidad del backend y permite enfocarse en la lógica de negocio en lugar de la infraestructura.</p></div>
+      <div class="entry">
+        <div class="ebar"></div>
+        <div><div class="ehead">Menor curva de entrada para el equipo</div><div class="ebody">En un contexto académico, Python reduce la complejidad del backend y permite enfocarse en la lógica de negocio en lugar de la infraestructura.</div></div>
       </div>
     </div>
   </section>
 
   <!-- 9 · DESVENTAJAS -->
   <section class="slide" data-i="9">
-    <h2 class="stitle">Desventajas y Dificultades</h2>
-    <div class="open-rows">
-      <div class="orow con">
-        <span class="oi">📱</span>
-        <div><h4>Python no existe en mobile nativo</h4><p>No hay equivalente real a React Native. Kivy y BeeWare/Toga existen, pero sin acceso a módulos nativos de Expo: cámara, sensores, push notifications, geolocalización.</p></div>
+    <h2 class="st">Desventajas y Dificultades</h2>
+    <div class="entries">
+      <div class="entry">
+        <div class="ebar neg"></div>
+        <div><div class="ehead">Python no existe en mobile nativo</div><div class="ebody">No hay equivalente real a React Native. Kivy y BeeWare/Toga carecen de acceso a módulos nativos de Expo: cámara, sensores, push notifications y geolocalización.</div></div>
       </div>
-      <div class="orow con">
-        <span class="oi">🏪</span>
-        <div><h4>Distribución en App Store y Google Play</h4><p>Publicar una app Python en las tiendas es extremadamente complejo. Las plataformas no están diseñadas para eso — hay restricciones técnicas y políticas serias.</p></div>
+      <div class="entry">
+        <div class="ebar neg"></div>
+        <div><div class="ehead">Distribución en App Store y Google Play</div><div class="ebody">Publicar una app Python en tiendas es extremadamente complejo. Las plataformas imponen restricciones técnicas y políticas que lo hacen inviable en la práctica.</div></div>
       </div>
-      <div class="orow con">
-        <span class="oi">🎨</span>
-        <div><h4>UX nativa degradada</h4><p>Sin Expo Router, sin Reanimated, sin componentes de navegación nativa. La experiencia de usuario sería notablemente inferior a lo que ofrece React Native.</p></div>
+      <div class="entry">
+        <div class="ebar neg"></div>
+        <div><div class="ehead">UX nativa degradada</div><div class="ebody">Sin Expo Router, sin Reanimated ni navegación nativa. La experiencia de usuario sería notablemente inferior a lo que ofrece el stack React Native actual.</div></div>
       </div>
-      <div class="orow con">
-        <span class="oi">⚙️</span>
-        <div><h4>GIL limita la concurrencia real</h4><p>El Global Interpreter Lock de CPython limita el paralelismo. Con asyncio es manejable, pero requiere que toda la app sea async — lo que rompe muchas librerías síncronas.</p></div>
+      <div class="entry">
+        <div class="ebar neg"></div>
+        <div><div class="ehead">GIL limita la concurrencia real del backend</div><div class="ebody">El Global Interpreter Lock restringe el paralelismo en CPython. asyncio es manejable pero impone que toda la aplicación sea asíncrona, rompiendo librerías síncronas.</div></div>
       </div>
     </div>
   </section>
 
   <!-- 10 · VEREDICTO -->
   <section class="slide" data-i="10">
-    <h2 class="slide-title">Veredicto</h2>
+    <h2 class="st">Veredicto</h2>
     <table class="vtable">
       <thead>
         <tr>
@@ -686,8 +580,8 @@ personas = [<span class="st">"Ana"</span>, <span class="st">"Luis"</span>, <span
         </tr>
         <tr>
           <td>Concurrencia bajo carga</td>
-          <td><span class="badge b">N/A (cliente)</span></td>
-          <td><span class="badge y">Limitado (GIL)</span></td>
+          <td><span class="badge b">N/A (capa cliente)</span></td>
+          <td><span class="badge y">Limitado por GIL</span></td>
         </tr>
         <tr>
           <td>Ecosistema y comunidad</td>
@@ -697,15 +591,17 @@ personas = [<span class="st">"Ana"</span>, <span class="st">"Luis"</span>, <span
       </tbody>
     </table>
     <div class="conclusion">
-      <p><strong>Conclusión:</strong> Python no puede reemplazar Expo/React Native en la capa móvil, pero es una elección excelente para el <strong>backend y la lógica de IA</strong>. La arquitectura óptima combina ambos: <strong>FastAPI (Python) + Expo (React Native)</strong> — cada tecnología donde brilla.</p>
+      <p>Python no puede sustituir Expo/React Native en la capa móvil, pero es la elección natural para el <strong>backend y la lógica de IA</strong>. La arquitectura óptima combina ambos: <strong>FastAPI (Python) + Expo (React Native)</strong> — cada tecnología donde realmente brilla.</p>
     </div>
   </section>
 
-</div><!-- /deck -->
+</div>
 
 <script>
   const TOTAL = 11;
+  const PEER_ID = 'pypres-mike-python-2026';
   let current = 0;
+  let peer, conn;
 
   const slides = Array.from(document.querySelectorAll('.slide'));
   const progressFill = document.getElementById('progress-fill');
@@ -713,11 +609,11 @@ personas = [<span class="st">"Ana"</span>, <span class="st">"Luis"</span>, <span
   const connDot = document.getElementById('conn-dot');
   const connLabel = document.getElementById('conn-label');
 
-  function showSlide(n, push = true) {
+  function showSlide(n) {
     const prev = slides[current];
     prev.classList.remove('active');
     prev.classList.add('exit');
-    setTimeout(() => prev.classList.remove('exit'), 480);
+    setTimeout(() => prev.classList.remove('exit'), 420);
 
     current = Math.max(0, Math.min(TOTAL - 1, n));
     slides[current].classList.add('active');
@@ -725,13 +621,7 @@ personas = [<span class="st">"Ana"</span>, <span class="st">"Luis"</span>, <span
     progressFill.style.width = ((current / (TOTAL - 1)) * 100) + '%';
     counter.textContent = (current + 1) + ' / ' + TOTAL;
 
-    if (push) {
-      fetch('/api/state', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ slide: current }),
-      }).catch(() => {});
-    }
+    if (conn && conn.open) conn.send({ type: 'slide', index: current });
   }
 
   function go(dir) { showSlide(current + dir); }
@@ -741,21 +631,36 @@ personas = [<span class="st">"Ana"</span>, <span class="st">"Luis"</span>, <span
     else if (e.key === 'ArrowLeft') { e.preventDefault(); go(-1); }
   });
 
-  // Polling — recibe cambios del remoto
-  let lastSeen = 0;
-  setInterval(async () => {
-    try {
-      const { slide } = await fetch('/api/state').then(r => r.json());
-      if (slide !== lastSeen) {
-        lastSeen = slide;
-        if (slide !== current) showSlide(slide, false);
-        connDot.classList.add('on');
-        connLabel.textContent = 'Remoto activo';
-      }
-    } catch (_) {}
-  }, 1000);
+  function initPeer() {
+    peer = new Peer(PEER_ID, { secure: true, debug: 0 });
+
+    peer.on('connection', c => {
+      conn = c;
+      connDot.classList.add('on');
+      connLabel.textContent = 'remoto';
+
+      conn.on('open', () => conn.send({ type: 'slide', index: current, total: TOTAL }));
+
+      conn.on('data', msg => {
+        if (msg.type === 'next') go(1);
+        else if (msg.type === 'prev') go(-1);
+        else if (msg.type === 'goto') showSlide(msg.index);
+        else if (msg.type === 'ping') conn.send({ type: 'pong', index: current, total: TOTAL });
+      });
+
+      conn.on('close', () => {
+        connDot.classList.remove('on');
+        connLabel.textContent = '—';
+      });
+    });
+
+    peer.on('error', err => {
+      connLabel.textContent = err.type === 'unavailable-id' ? 'ID en uso' : 'error';
+    });
+  }
 
   progressFill.style.width = '0%';
+  initPeer();
 </script>
 </body>
 </html>
