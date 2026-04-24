@@ -706,6 +706,7 @@ personas = [<span class="st">"Ana"</span>, <span class="st">"Luis"</span>, <span
 
 <script>
   const TOTAL = 11;
+  const PEER_ID = 'pypres-mike-python-2026'; // ID fijo — solo tú conoces /remote
   let current = 0;
   let peer, conn;
 
@@ -714,7 +715,6 @@ personas = [<span class="st">"Ana"</span>, <span class="st">"Luis"</span>, <span
   const counter = document.getElementById('counter');
   const connDot = document.getElementById('conn-dot');
   const connLabel = document.getElementById('conn-label');
-  const codeDisplay = document.getElementById('code-display');
 
   function showSlide(n) {
     const prev = slides[current];
@@ -738,18 +738,8 @@ personas = [<span class="st">"Ana"</span>, <span class="st">"Luis"</span>, <span
     else if (e.key === 'ArrowLeft') { e.preventDefault(); go(-1); }
   });
 
-  // ── PeerJS con código de 4 dígitos ──
-  function makeCode() {
-    return Math.floor(1000 + Math.random() * 9000).toString();
-  }
-
-  function initPeer(code) {
-    const peerId = 'pypres-' + code;
-    peer = new Peer(peerId, { secure: true, debug: 0 });
-
-    peer.on('open', () => {
-      codeDisplay.textContent = code;
-    });
+  function initPeer() {
+    peer = new Peer(PEER_ID, { secure: true, debug: 0 });
 
     peer.on('connection', c => {
       conn = c;
@@ -773,9 +763,7 @@ personas = [<span class="st">"Ana"</span>, <span class="st">"Luis"</span>, <span
 
     peer.on('error', err => {
       if (err.type === 'unavailable-id') {
-        // Code taken, try another
-        peer.destroy();
-        initPeer(makeCode());
+        connLabel.textContent = 'ID en uso — recarga';
       } else {
         connLabel.textContent = 'Error de red';
       }
@@ -783,7 +771,7 @@ personas = [<span class="st">"Ana"</span>, <span class="st">"Luis"</span>, <span
   }
 
   progressFill.style.width = '0%';
-  initPeer(makeCode());
+  initPeer();
 </script>
 </body>
 </html>
