@@ -46,48 +46,28 @@
     .screen { width: 100%; max-width: 360px; display: none; flex-direction: column; align-items: center; gap: 20px; }
     .screen.visible { display: flex; }
 
-    /* ── Connect screen ── */
-    .connect-title { font-size: 22px; font-weight: 700; text-align: center; }
-    .connect-sub { font-size: 14px; color: var(--muted); text-align: center; line-height: 1.5; }
+    /* ── Connecting screen ── */
+    .conn-icon { font-size: 48px; }
+    .conn-title { font-size: 22px; font-weight: 700; }
+    .conn-sub { font-size: 14px; color: var(--muted); text-align: center; line-height: 1.6; }
 
-    .code-input-wrap { width: 100%; display: flex; flex-direction: column; gap: 10px; }
-
-    #code-input {
-      width: 100%; padding: 18px;
-      background: var(--surface); border: 1px solid var(--border);
-      border-radius: var(--r); color: var(--text);
-      font-family: 'Inter', sans-serif;
-      font-size: 36px; font-weight: 800;
-      text-align: center; letter-spacing: 8px;
-      outline: none; transition: border-color .2s;
-      -webkit-appearance: none;
-    }
-
-    #code-input:focus { border-color: var(--blue); }
-    #code-input::placeholder { color: var(--muted); letter-spacing: 4px; font-weight: 400; }
-
-    #connect-btn {
-      width: 100%; padding: 18px;
-      background: var(--blue); border: none; border-radius: var(--r);
-      color: white; font-size: 17px; font-weight: 600;
-      font-family: 'Inter', sans-serif; cursor: pointer;
-      transition: opacity .15s, transform .1s;
-    }
-    #connect-btn:active { transform: scale(.97); opacity: .85; }
-    #connect-btn:disabled { opacity: .4; cursor: default; }
-
-    #connect-error {
-      font-size: 13px; color: var(--red); text-align: center;
-      display: none;
-    }
-
-    .spinner-wrap { display: flex; align-items: center; gap: 12px; }
     .spinner {
-      width: 20px; height: 20px; border: 2px solid var(--border);
+      width: 28px; height: 28px; border: 3px solid var(--border);
       border-top-color: var(--blue); border-radius: 50%;
-      animation: spin .7s linear infinite; flex-shrink: 0;
+      animation: spin .7s linear infinite;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
+
+    #error-msg {
+      font-size: 13px; color: var(--red); text-align: center; display: none;
+    }
+
+    #retry-btn {
+      padding: 12px 32px; background: var(--blue);
+      border: none; border-radius: 12px; color: white;
+      font-size: 15px; font-weight: 600; cursor: pointer;
+      font-family: 'Inter', sans-serif; display: none;
+    }
 
     /* ── Remote screen ── */
     .status-bar {
@@ -95,82 +75,50 @@
       border-radius: 12px; padding: 12px 16px;
       display: flex; align-items: center; justify-content: space-between;
     }
-
     .status-left { display: flex; align-items: center; gap: 8px; }
     #dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); }
     #status-lbl { font-size: 13px; color: var(--muted); }
     #slide-num { font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
 
-    #prog-bar {
-      width: 100%; height: 4px; background: var(--surface2);
-      border-radius: 100px; overflow: hidden;
-    }
-    #prog-fill {
-      height: 100%;
-      background: linear-gradient(90deg, var(--blue), var(--yellow));
-      border-radius: 100px; transition: width .35s ease;
-    }
+    #prog-bar { width: 100%; height: 4px; background: var(--surface2); border-radius: 100px; overflow: hidden; }
+    #prog-fill { height: 100%; background: linear-gradient(90deg, var(--blue), var(--yellow)); border-radius: 100px; transition: width .35s ease; }
 
     #slide-name {
-      font-size: 15px; font-weight: 600; text-align: center;
-      color: var(--text); line-height: 1.3;
+      font-size: 15px; font-weight: 600; text-align: center; color: var(--text);
       background: var(--surface); border: 1px solid var(--border);
-      border-radius: 12px; padding: 14px 18px; width: 100%;
+      border-radius: 12px; padding: 14px 18px; width: 100%; line-height: 1.3;
     }
 
-    /* ── Big nav buttons ── */
     .nav-row { display: flex; gap: 14px; width: 100%; }
 
     .btn-nav {
       flex: 1; height: 120px; border: none; border-radius: var(--r);
-      font-size: 44px; font-family: 'Inter', sans-serif;
-      cursor: pointer; transition: transform .1s, opacity .1s;
+      font-size: 44px; cursor: pointer;
+      transition: transform .1s, opacity .1s;
       display: flex; align-items: center; justify-content: center;
     }
     .btn-nav:active { transform: scale(.93); opacity: .8; }
 
-    #btn-prev {
-      background: var(--surface); border: 1px solid var(--border); color: var(--text);
-    }
-    #btn-next {
-      background: linear-gradient(135deg, var(--blue), #3a6fa0); color: white;
-    }
+    #btn-prev { background: var(--surface); border: 1px solid var(--border); color: var(--text); }
+    #btn-next { background: linear-gradient(135deg, var(--blue), #3a6fa0); color: white; }
 
-    /* ── Swipe hint ── */
     .swipe-hint { font-size: 11px; color: var(--muted); opacity: .5; }
-
-    /* ── Disconnect link ── */
-    #disconnect {
-      font-size: 12px; color: var(--muted); cursor: pointer;
-      text-decoration: underline; background: none; border: none;
-      font-family: 'Inter', sans-serif;
-    }
   </style>
 </head>
 <body>
 <div class="top-strip"></div>
 
-<!-- ── CONNECT SCREEN ── -->
-<div class="screen visible" id="screen-connect">
-  <div style="font-size:40px">🎛️</div>
-  <div class="connect-title">Control Remoto</div>
-  <p class="connect-sub">Ingresa el código de 4 dígitos<br>que aparece en la presentación</p>
-
-  <div class="code-input-wrap">
-    <input
-      id="code-input"
-      type="tel"
-      maxlength="4"
-      placeholder="····"
-      autocomplete="off"
-      inputmode="numeric"
-    >
-    <p id="connect-error">No se pudo conectar. Verifica el código e inténtalo de nuevo.</p>
-    <button id="connect-btn" onclick="doConnect()">Conectar</button>
-  </div>
+<!-- Connecting -->
+<div class="screen visible" id="screen-connecting">
+  <div class="conn-icon">📡</div>
+  <div class="conn-title">Conectando...</div>
+  <p class="conn-sub">Buscando la presentación</p>
+  <div class="spinner" id="spinner"></div>
+  <p id="error-msg">No se pudo conectar. Asegúrate de que la presentación esté abierta.</p>
+  <button id="retry-btn" onclick="location.reload()">Reintentar</button>
 </div>
 
-<!-- ── REMOTE SCREEN ── -->
+<!-- Remote -->
 <div class="screen" id="screen-remote">
   <div class="status-bar">
     <div class="status-left">
@@ -190,10 +138,11 @@
   </div>
 
   <p class="swipe-hint">Desliza ← → para cambiar slide</p>
-  <button id="disconnect" onclick="doDisconnect()">Desconectar</button>
 </div>
 
 <script>
+  const PEER_ID = 'pypres-mike-python-2026'; // debe coincidir con presentacion.html
+
   const SLIDE_NAMES = [
     'Portada', '¿Qué es Python?', '¿Para qué se utiliza?',
     'Características', 'Ventajas', 'Áreas de Aplicación',
@@ -205,45 +154,30 @@
   let totalSlides = 11;
   let currentSlide = 0;
 
-  const connectBtn = document.getElementById('connect-btn');
-  const connectError = document.getElementById('connect-error');
-  const codeInput = document.getElementById('code-input');
   const progFill = document.getElementById('prog-fill');
   const slideNum = document.getElementById('slide-num');
   const slideName = document.getElementById('slide-name');
-
-  // Only allow digits in the input
-  codeInput.addEventListener('input', () => {
-    codeInput.value = codeInput.value.replace(/\D/g, '').slice(0, 4);
-    connectError.style.display = 'none';
-  });
-
-  codeInput.addEventListener('keydown', e => {
-    if (e.key === 'Enter') doConnect();
-  });
+  const errorMsg = document.getElementById('error-msg');
+  const retryBtn = document.getElementById('retry-btn');
+  const spinner = document.getElementById('spinner');
 
   function showScreen(id) {
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('visible'));
     document.getElementById(id).classList.add('visible');
   }
 
-  function doConnect() {
-    const code = codeInput.value.trim();
-    if (code.length !== 4) { codeInput.focus(); return; }
+  function onFail() {
+    spinner.style.display = 'none';
+    errorMsg.style.display = 'block';
+    retryBtn.style.display = 'inline-block';
+  }
 
-    connectBtn.disabled = true;
-    connectBtn.textContent = 'Conectando...';
-    connectError.style.display = 'none';
-
-    if (peer) { try { peer.destroy(); } catch(e) {} }
-
+  function connect() {
     peer = new Peer(undefined, { secure: true, debug: 0 });
 
     peer.on('open', () => {
-      const targetId = 'pypres-' + code;
-      conn = peer.connect(targetId, { reliable: true });
-
-      const timeout = setTimeout(onFail, 8000);
+      conn = peer.connect(PEER_ID, { reliable: true });
+      const timeout = setTimeout(onFail, 9000);
 
       conn.on('open', () => {
         clearTimeout(timeout);
@@ -269,22 +203,6 @@
     peer.on('error', onFail);
   }
 
-  function onFail() {
-    connectBtn.disabled = false;
-    connectBtn.textContent = 'Conectar';
-    connectError.style.display = 'block';
-    showScreen('screen-connect');
-  }
-
-  function doDisconnect() {
-    if (conn) try { conn.close(); } catch(e) {}
-    if (peer) try { peer.destroy(); } catch(e) {}
-    conn = null; peer = null;
-    connectBtn.disabled = false;
-    connectBtn.textContent = 'Conectar';
-    showScreen('screen-connect');
-  }
-
   function send(type) {
     if (!conn || !conn.open) return;
     conn.send({ type });
@@ -307,6 +225,8 @@
     const dx = e.changedTouches[0].clientX - startX;
     if (Math.abs(dx) > 55) send(dx < 0 ? 'next' : 'prev');
   }, { passive: true });
+
+  connect();
 </script>
 </body>
 </html>
