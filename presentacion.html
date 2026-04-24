@@ -1,0 +1,888 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1280, initial-scale=1">
+  <title>Python — Presentación</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #080d1a;
+      --surface: #0f1729;
+      --surface2: #1a2340;
+      --blue: #4584b6;
+      --blue-light: #6aa3d4;
+      --yellow: #ffd43b;
+      --yellow-dim: #c9a62e;
+      --text: #eef2f8;
+      --muted: #7a90b0;
+      --border: #1e2d47;
+      --green: #22c55e;
+      --red: #ef4444;
+      --orange: #f97316;
+      --r: 14px;
+    }
+
+    html, body {
+      width: 100%; height: 100%;
+      overflow: hidden;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      font-size: 16px;
+    }
+
+    /* ── Top accent bar ── */
+    .top-bar {
+      position: fixed; top: 0; left: 0; right: 0; height: 3px;
+      background: linear-gradient(90deg, var(--blue) 0%, var(--yellow) 100%);
+      z-index: 200;
+    }
+
+    /* ── Slides container ── */
+    #deck {
+      width: 100vw; height: 100vh;
+      position: relative;
+    }
+
+    .slide {
+      position: absolute; inset: 0;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: 64px 96px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .45s ease, transform .45s ease;
+      transform: translateX(48px);
+      will-change: opacity, transform;
+    }
+
+    .slide.active {
+      opacity: 1;
+      transform: translateX(0);
+      pointer-events: all;
+    }
+
+    .slide.exit {
+      opacity: 0;
+      transform: translateX(-48px);
+    }
+
+    /* ── Progress bar ── */
+    #progress {
+      position: fixed; bottom: 0; left: 0; right: 0; height: 3px;
+      background: var(--surface2); z-index: 200;
+    }
+    #progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--blue), var(--yellow));
+      transition: width .4s ease;
+    }
+
+    /* ── Counter & status ── */
+    #counter {
+      position: fixed; bottom: 14px; right: 28px;
+      font-size: 12px; color: var(--muted); z-index: 200;
+      font-variant-numeric: tabular-nums;
+    }
+
+    #conn-status {
+      position: fixed; top: 18px; right: 24px;
+      display: flex; align-items: center; gap: 7px;
+      font-size: 12px; color: var(--muted); z-index: 200;
+    }
+
+    #conn-dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: var(--red);
+      transition: background .3s;
+    }
+
+    #conn-dot.on { background: var(--green); }
+
+    /* ── Nav arrows ── */
+    .nav-btn {
+      position: fixed; top: 50%; transform: translateY(-50%);
+      background: rgba(255,255,255,.04);
+      border: 1px solid var(--border);
+      border-radius: 50%; width: 44px; height: 44px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; color: var(--muted); font-size: 22px;
+      transition: all .2s; z-index: 200; user-select: none;
+    }
+    .nav-btn:hover { background: rgba(255,255,255,.09); color: var(--text); border-color: var(--blue); }
+    #btn-prev { left: 16px; }
+    #btn-next { right: 16px; }
+
+    /* ── QR Panel ── */
+    #qr-panel {
+      position: fixed; top: 50%; left: 50%;
+      transform: translate(-50%, -50%) scale(.92);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r); padding: 36px 40px;
+      text-align: center; z-index: 300;
+      opacity: 0; pointer-events: none;
+      transition: all .3s ease;
+      backdrop-filter: blur(8px);
+    }
+    #qr-panel.show {
+      opacity: 1; pointer-events: all;
+      transform: translate(-50%, -50%) scale(1);
+    }
+    #qr-panel h3 { font-size: 15px; font-weight: 600; margin-bottom: 20px; color: var(--text); }
+    #qr-code canvas { border-radius: 8px; }
+    #qr-url { font-size: 11px; color: var(--muted); margin-top: 14px; word-break: break-all; max-width: 240px; }
+    #qr-panel .hint { font-size: 11px; color: var(--muted); margin-top: 8px; opacity: .6; }
+    #qr-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,.5);
+      z-index: 299; opacity: 0; pointer-events: none;
+      transition: opacity .3s;
+    }
+    #qr-overlay.show { opacity: 1; pointer-events: all; }
+
+    /* ── Key hint ── */
+    #key-hint {
+      position: fixed; bottom: 14px; left: 50%;
+      transform: translateX(-50%);
+      font-size: 11px; color: var(--muted); opacity: .4; z-index: 200;
+    }
+
+    /* ════════════════════════════════════════
+       SLIDE DESIGN TOKENS
+    ════════════════════════════════════════ */
+
+    h2.slide-title {
+      font-size: 34px; font-weight: 700;
+      margin-bottom: 36px;
+      align-self: flex-start;
+      padding-bottom: 14px;
+      border-bottom: 2px solid var(--blue);
+      width: 100%;
+    }
+
+    /* ── Cover ── */
+    .slide-cover {
+      background:
+        radial-gradient(ellipse 60% 60% at 50% 40%, #0e2248 0%, transparent 70%),
+        var(--bg);
+      text-align: center;
+    }
+
+    .py-logo {
+      width: 96px; height: 96px; margin-bottom: 28px;
+    }
+
+    .slide-cover h1 {
+      font-size: 88px; font-weight: 900;
+      line-height: 1;
+      background: linear-gradient(135deg, var(--blue-light) 20%, var(--yellow) 80%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 14px;
+    }
+
+    .slide-cover .subtitle {
+      font-size: 21px; color: var(--muted); font-weight: 300;
+      max-width: 560px;
+    }
+
+    .chips { display: flex; gap: 12px; margin-top: 36px; flex-wrap: wrap; justify-content: center; }
+
+    .chip {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 100px; padding: 6px 16px;
+      font-size: 13px; color: var(--muted);
+    }
+
+    /* ── Section divider slide ── */
+    .slide-section {
+      background:
+        radial-gradient(ellipse 55% 55% at 50% 45%, #0d1f40 0%, transparent 70%),
+        var(--bg);
+      text-align: center;
+    }
+
+    .section-label {
+      font-size: 12px; font-weight: 600; letter-spacing: 3px;
+      text-transform: uppercase; color: var(--blue);
+      margin-bottom: 16px;
+    }
+
+    .slide-section h2 {
+      font-size: 50px; font-weight: 700; line-height: 1.12;
+      border: none; padding: 0; margin: 0; width: auto;
+      align-self: auto;
+    }
+
+    .slide-section .accent { color: var(--yellow); }
+
+    .slide-section .sub {
+      font-size: 18px; color: var(--muted); font-weight: 300;
+      max-width: 580px; margin-top: 20px; line-height: 1.6;
+    }
+
+    /* ── Cards grid ── */
+    .grid {
+      display: grid; gap: 16px; width: 100%;
+    }
+    .grid.c2 { grid-template-columns: 1fr 1fr; }
+    .grid.c3 { grid-template-columns: 1fr 1fr 1fr; }
+    .grid.c4 { grid-template-columns: repeat(4, 1fr); }
+
+    .card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--r); padding: 22px;
+      transition: border-color .2s;
+    }
+    .card:hover { border-color: var(--blue); }
+    .card .ci { font-size: 26px; margin-bottom: 10px; }
+    .card h3 { font-size: 15px; font-weight: 600; margin-bottom: 6px; }
+    .card p { font-size: 13px; color: var(--muted); line-height: 1.6; }
+
+    .card.center { text-align: center; }
+    .card.center h3 { font-size: 13px; }
+    .card.center p { font-size: 12px; margin-top: 4px; }
+
+    /* ── List items ── */
+    .list { display: flex; flex-direction: column; gap: 14px; width: 100%; }
+
+    .li {
+      display: flex; align-items: flex-start; gap: 16px;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--r); padding: 18px 22px;
+    }
+
+    .li .ico { font-size: 20px; flex-shrink: 0; margin-top: 2px; }
+    .li .body h4 { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+    .li .body p { font-size: 13px; color: var(--muted); line-height: 1.55; }
+
+    /* ── Two column layout ── */
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; width: 100%; }
+
+    /* ── Highlight box ── */
+    .hbox {
+      background: linear-gradient(135deg, rgba(69,132,182,.08), rgba(255,212,59,.04));
+      border: 1px solid rgba(69,132,182,.25);
+      border-radius: var(--r); padding: 22px 26px; width: 100%;
+    }
+    .hbox p { font-size: 17px; line-height: 1.65; font-weight: 300; }
+    .hbox strong { color: var(--yellow); font-weight: 600; }
+
+    /* ── Code block ── */
+    .code {
+      background: #060a14; border: 1px solid var(--border);
+      border-radius: var(--r); padding: 20px 22px;
+      font-family: 'Fira Code', 'Courier New', monospace;
+      font-size: 13px; line-height: 1.7; color: #cdd6f4;
+    }
+    .code .kw { color: #cba6f7; }
+    .code .fn { color: #a6e3a1; }
+    .code .st { color: #f9e2af; }
+    .code .cm { color: #45475a; }
+    .code .nb { color: #89dceb; }
+
+    /* ── Stats ── */
+    .stats { display: flex; gap: 48px; margin-top: 8px; }
+    .stat .num { font-size: 44px; font-weight: 800; color: var(--blue-light); line-height: 1; }
+    .stat .lbl { font-size: 12px; color: var(--muted); margin-top: 4px; }
+
+    /* ── Pro/Con items ── */
+    .li.pro { border-left: 3px solid var(--green); }
+    .li.con { border-left: 3px solid var(--red); }
+
+    /* ── Verdict table ── */
+    .vtable {
+      width: 100%; border-collapse: collapse;
+      font-size: 13.5px; border-radius: var(--r); overflow: hidden;
+    }
+    .vtable thead tr { background: var(--surface2); }
+    .vtable th {
+      padding: 13px 18px; text-align: left;
+      font-size: 11px; font-weight: 600;
+      text-transform: uppercase; letter-spacing: .8px;
+      color: var(--muted);
+    }
+    .vtable td {
+      padding: 13px 18px;
+      border-bottom: 1px solid var(--border);
+      color: var(--text);
+    }
+    .vtable tbody tr:last-child td { border-bottom: none; }
+    .vtable tbody tr:hover { background: rgba(255,255,255,.02); }
+
+    .badge {
+      display: inline-block; padding: 3px 10px;
+      border-radius: 100px; font-size: 11px; font-weight: 600;
+    }
+    .badge.g { background: rgba(34,197,94,.12); color: #22c55e; }
+    .badge.r { background: rgba(239,68,68,.12); color: #ef4444; }
+    .badge.y { background: rgba(255,212,59,.12); color: var(--yellow); }
+    .badge.b { background: rgba(69,132,182,.12); color: var(--blue-light); }
+
+    /* ── Conclusion box ── */
+    .conclusion {
+      background: linear-gradient(135deg, rgba(34,197,94,.06), rgba(69,132,182,.06));
+      border: 1px solid rgba(34,197,94,.2);
+      border-radius: var(--r); padding: 20px 24px;
+      width: 100%; margin-top: 18px;
+    }
+    .conclusion p { font-size: 15px; line-height: 1.65; }
+    .conclusion strong { color: var(--green); }
+  </style>
+</head>
+<body>
+
+<div class="top-bar"></div>
+
+<!-- Connection status -->
+<div id="conn-status">
+  <div id="conn-dot"></div>
+  <span id="conn-label">Sin control remoto</span>
+</div>
+
+<!-- Nav buttons -->
+<div class="nav-btn" id="btn-prev" onclick="go(-1)">‹</div>
+<div class="nav-btn" id="btn-next" onclick="go(1)">›</div>
+
+<!-- Progress -->
+<div id="progress"><div id="progress-fill"></div></div>
+
+<!-- Counter -->
+<div id="counter">1 / 11</div>
+
+<!-- Key hint -->
+<div id="key-hint">← → Espacio para navegar &nbsp;·&nbsp; Q para control remoto</div>
+
+<!-- QR overlay + panel -->
+<div id="qr-overlay" onclick="toggleQR()"></div>
+<div id="qr-panel">
+  <h3>Conectar control remoto</h3>
+  <div id="qr-code"></div>
+  <p id="qr-url"></p>
+  <p class="hint">Escanea con tu móvil · Q para cerrar</p>
+</div>
+
+<!-- ═══════════════════════════════════════
+     SLIDES
+═══════════════════════════════════════ -->
+<div id="deck">
+
+  <!-- 0 · PORTADA -->
+  <section class="slide slide-cover active" data-i="0">
+    <svg class="py-logo" viewBox="0 0 110 110" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="g1" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#4584b6"/>
+          <stop offset="100%" stop-color="#6aa3d4"/>
+        </linearGradient>
+        <linearGradient id="g2" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#ffd43b"/>
+          <stop offset="100%" stop-color="#ffc107"/>
+        </linearGradient>
+      </defs>
+      <path d="M54 6C29 6 31 17 31 17L31 28H55V31H19S6 29 6 55s12 22 12 22h9V66s-1-12 12-12h26s12 0 12-12V20S79 6 54 6Z" fill="url(#g1)"/>
+      <circle cx="41.5" cy="20" r="4" fill="white" opacity=".75"/>
+      <path d="M56 104C81 104 79 93 79 93L79 82H55V79H91S104 81 104 55 92 33 92 33h-9V44s1 12-12 12H45s-12 0-12 12V90S33 104 56 104Z" fill="url(#g2)"/>
+      <circle cx="68.5" cy="90" r="4" fill="white" opacity=".75"/>
+    </svg>
+    <h1>Python</h1>
+    <p class="subtitle">El lenguaje que democratizó la programación</p>
+    <div class="chips">
+      <span class="chip">Creado en 1991</span>
+      <span class="chip">Open Source</span>
+      <span class="chip">Propósito General</span>
+      <span class="chip">#1 en popularidad</span>
+    </div>
+  </section>
+
+  <!-- 1 · ¿QUÉ ES PYTHON? -->
+  <section class="slide" data-i="1">
+    <h2 class="slide-title">¿Qué es Python?</h2>
+    <div class="two-col">
+      <div style="display:flex;flex-direction:column;gap:16px">
+        <div class="hbox">
+          <p>Python es un lenguaje <strong>interpretado, de alto nivel y propósito general</strong>, diseñado para ser legible, expresivo y fácil de aprender.</p>
+        </div>
+        <div class="list">
+          <div class="li">
+            <span class="ico">🧑‍💻</span>
+            <div class="body">
+              <h4>Guido van Rossum · 1991</h4>
+              <p>Inspirado en ABC y Modula-3. El nombre viene de Monty Python, no de la serpiente.</p>
+            </div>
+          </div>
+          <div class="li">
+            <span class="ico">📖</span>
+            <div class="body">
+              <h4>The Zen of Python</h4>
+              <p>"Simple es mejor que complejo. La legibilidad cuenta."</p>
+            </div>
+          </div>
+          <div class="li">
+            <span class="ico">🌍</span>
+            <div class="body">
+              <h4>Lenguaje más popular del mundo</h4>
+              <p>Índice TIOBE y Stack Overflow Survey lo ubican #1 desde 2021.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:16px">
+        <div class="code">
+<span class="cm"># Python en pocas líneas</span><br>
+<span class="kw">def</span> <span class="fn">saludar</span>(nombre):<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">return</span> <span class="st">f"Hola, {nombre}!"</span><br>
+<br>
+personas = [<span class="st">"Ana"</span>, <span class="st">"Luis"</span>, <span class="st">"María"</span>]<br>
+<br>
+<span class="kw">for</span> p <span class="kw">in</span> personas:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="nb">print</span>(saludar(p))<br>
+<br>
+<span class="cm"># Hola, Ana!</span><br>
+<span class="cm"># Hola, Luis!</span><br>
+<span class="cm"># Hola, María!</span>
+        </div>
+        <div class="stats">
+          <div class="stat">
+            <div class="num">500K+</div>
+            <div class="lbl">Paquetes en PyPI</div>
+          </div>
+          <div class="stat">
+            <div class="num">30+</div>
+            <div class="lbl">Años de historia</div>
+          </div>
+          <div class="stat">
+            <div class="num">#1</div>
+            <div class="lbl">TIOBE Index 2024</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2 · PARA QUÉ SE UTILIZA -->
+  <section class="slide" data-i="2">
+    <h2 class="slide-title">¿Para qué se utiliza?</h2>
+    <div class="grid c3">
+      <div class="card">
+        <div class="ci">🌐</div>
+        <h3>Desarrollo Web</h3>
+        <p>Django, FastAPI y Flask para construir APIs y aplicaciones web robustas y escalables.</p>
+      </div>
+      <div class="card">
+        <div class="ci">🤖</div>
+        <h3>Inteligencia Artificial</h3>
+        <p>TensorFlow, PyTorch, scikit-learn: el ecosistema de IA más completo del mundo.</p>
+      </div>
+      <div class="card">
+        <div class="ci">📊</div>
+        <h3>Análisis de Datos</h3>
+        <p>pandas, NumPy, Matplotlib y Jupyter Notebooks para ciencia de datos.</p>
+      </div>
+      <div class="card">
+        <div class="ci">⚙️</div>
+        <h3>Automatización</h3>
+        <p>Scripts, bots, tareas programadas y automatización de sistemas operativos.</p>
+      </div>
+      <div class="card">
+        <div class="ci">🔒</div>
+        <h3>Ciberseguridad</h3>
+        <p>Pentesting, análisis forense y herramientas profesionales como Scapy y Nmap.</p>
+      </div>
+      <div class="card">
+        <div class="ci">☁️</div>
+        <h3>DevOps & Cloud</h3>
+        <p>Ansible, AWS Lambda, GCP Functions y scripts de infraestructura.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3 · CARACTERÍSTICAS -->
+  <section class="slide" data-i="3">
+    <h2 class="slide-title">Características de Python</h2>
+    <div class="grid c2">
+      <div class="li">
+        <span class="ico">✍️</span>
+        <div class="body">
+          <h4>Sintaxis legible y limpia</h4>
+          <p>Usa indentación obligatoria. El código Python se lee casi como pseudocódigo — fácil de mantener y auditar.</p>
+        </div>
+      </div>
+      <div class="li">
+        <span class="ico">🔄</span>
+        <div class="body">
+          <h4>Tipado dinámico</h4>
+          <p>No es necesario declarar tipos. Las variables asumen el tipo de su valor en tiempo de ejecución.</p>
+        </div>
+      </div>
+      <div class="li">
+        <span class="ico">🧩</span>
+        <div class="body">
+          <h4>Multiparadigma</h4>
+          <p>Soporta programación orientada a objetos, funcional e imperativa de forma natural y simultánea.</p>
+        </div>
+      </div>
+      <div class="li">
+        <span class="ico">🔋</span>
+        <div class="body">
+          <h4>"Batteries included"</h4>
+          <p>Librería estándar extensísima: JSON, HTTP, archivos, regex, criptografía, concurrencia y más.</p>
+        </div>
+      </div>
+      <div class="li">
+        <span class="ico">🖥️</span>
+        <div class="body">
+          <h4>Multiplataforma</h4>
+          <p>El mismo código funciona en Windows, macOS y Linux sin modificaciones. Write once, run anywhere.</p>
+        </div>
+      </div>
+      <div class="li">
+        <span class="ico">🤝</span>
+        <div class="body">
+          <h4>Comunidad masiva</h4>
+          <p>Millones de desarrolladores, documentación excelente, y respuestas a cualquier pregunta en Stack Overflow.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4 · VENTAJAS -->
+  <section class="slide" data-i="4">
+    <h2 class="slide-title">Ventajas de Python</h2>
+    <div class="two-col">
+      <div class="list">
+        <div class="li">
+          <span class="ico">📈</span>
+          <div class="body">
+            <h4>Curva de aprendizaje baja</h4>
+            <p>Ideal para principiantes. Lo básico se aprende en días. La mayoría de universidades lo eligen como primer lenguaje.</p>
+          </div>
+        </div>
+        <div class="li">
+          <span class="ico">⚡</span>
+          <div class="body">
+            <h4>Alta productividad del desarrollador</h4>
+            <p>Menos líneas de código para el mismo resultado. FastAPI + Pydantic requiere ~30% menos código que Java Spring.</p>
+          </div>
+        </div>
+        <div class="li">
+          <span class="ico">🧪</span>
+          <div class="body">
+            <h4>Excelente para prototipado</h4>
+            <p>Desde idea hasta MVP funcional en horas. Jupyter Notebooks permiten experimentación interactiva e inmediata.</p>
+          </div>
+        </div>
+      </div>
+      <div class="list">
+        <div class="li">
+          <span class="ico">🌐</span>
+          <div class="body">
+            <h4>Ecosistema enorme</h4>
+            <p>PyPI tiene más de 500,000 paquetes. Casi cualquier problema tiene ya una librería madura y bien mantenida.</p>
+          </div>
+        </div>
+        <div class="li">
+          <span class="ico">🔗</span>
+          <div class="body">
+            <h4>Integración universal</h4>
+            <p>Se conecta fácilmente con C, Java, bases de datos, APIs REST, servicios cloud y hardware (IoT).</p>
+          </div>
+        </div>
+        <div class="li">
+          <span class="ico">🎯</span>
+          <div class="body">
+            <h4>Mercado laboral fuerte</h4>
+            <p>Alta demanda en data science, ML, backend y automatización. Salarios consistentemente por encima del promedio.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5 · ÁREAS DE APLICACIÓN -->
+  <section class="slide" data-i="5">
+    <h2 class="slide-title">Áreas de Aplicación</h2>
+    <div class="grid c4" style="gap:12px">
+      <div class="card center"><div class="ci">🧠</div><h3>Machine Learning</h3><p>scikit-learn · TensorFlow · PyTorch · Keras</p></div>
+      <div class="card center"><div class="ci">🌐</div><h3>Desarrollo Web</h3><p>Django · FastAPI · Flask · Starlette</p></div>
+      <div class="card center"><div class="ci">📊</div><h3>Data Science</h3><p>pandas · NumPy · Matplotlib · Seaborn</p></div>
+      <div class="card center"><div class="ci">🤖</div><h3>Automatización</h3><p>Selenium · Ansible · Airflow · Celery</p></div>
+      <div class="card center"><div class="ci">🔒</div><h3>Ciberseguridad</h3><p>Scapy · Paramiko · Nmap · Impacket</p></div>
+      <div class="card center"><div class="ci">🎮</div><h3>Videojuegos</h3><p>Pygame · Ren'Py · Blender Scripts</p></div>
+      <div class="card center"><div class="ci">🔬</div><h3>Ciencia</h3><p>SciPy · BioPython · Astropy · SymPy</p></div>
+      <div class="card center"><div class="ci">☁️</div><h3>Cloud & DevOps</h3><p>AWS Lambda · GCP Functions · Terraform</p></div>
+    </div>
+  </section>
+
+  <!-- 6 · SECCIÓN: ANÁLISIS -->
+  <section class="slide slide-section" data-i="6">
+    <div class="section-label">Análisis Final</div>
+    <h2>¿Podría nuestro proyecto<br>desarrollarse en <span class="accent">Python</span>?</h2>
+    <p class="sub">Evaluación técnica honesta: ventajas, dificultades y veredicto</p>
+  </section>
+
+  <!-- 7 · CONTEXTO DEL PROYECTO -->
+  <section class="slide" data-i="7">
+    <h2 class="slide-title">Contexto del Proyecto</h2>
+    <div class="hbox" style="margin-bottom:22px">
+      <p>El proyecto es una <strong>aplicación móvil multiplataforma</strong> construida con <strong>Expo (React Native)</strong>, con pantallas nativas iOS/Android, navegación, consumo de APIs REST, autenticación y notificaciones push.</p>
+    </div>
+    <div class="grid c3">
+      <div class="card">
+        <div class="ci">📱</div>
+        <h3>UI Nativa</h3>
+        <p>Expo + React Native renderiza componentes verdaderamente nativos para iOS y Android desde una sola base de código.</p>
+      </div>
+      <div class="card">
+        <div class="ci">🔗</div>
+        <h3>APIs & Servicios</h3>
+        <p>Integración con servicios externos, autenticación OAuth2, cámara, sensores y notificaciones push vía Expo SDK.</p>
+      </div>
+      <div class="card">
+        <div class="ci">🚀</div>
+        <h3>OTA Updates</h3>
+        <p>Expo EAS permite publicar actualizaciones al instante sin pasar por revisión de App Store o Google Play.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 8 · VENTAJAS EN PYTHON -->
+  <section class="slide" data-i="8">
+    <h2 class="slide-title">Ventajas si se usara Python</h2>
+    <div class="list">
+      <div class="li pro">
+        <span class="ico">🤖</span>
+        <div class="body">
+          <h4>Ecosistema de IA sin rival</h4>
+          <p>SDKs oficiales de Gemini, OpenAI y Groq disponibles en pip. Si el proyecto incorpora ML o procesamiento de datos, Python reduce el boilerplate a cero vs. llamadas HTTP manuales desde JS.</p>
+        </div>
+      </div>
+      <div class="li pro">
+        <span class="ico">⚡</span>
+        <div class="body">
+          <h4>Prototipado de backend ultra-rápido</h4>
+          <p>FastAPI + Pydantic permiten definir modelos y endpoints REST funcionales en horas. Para iterar rápido en lógica de negocio, Python reduce la fricción significativamente.</p>
+        </div>
+      </div>
+      <div class="li pro">
+        <span class="ico">📜</span>
+        <div class="body">
+          <h4>Automatización y scripting de primer nivel</h4>
+          <p>Tareas como procesamiento de datos, generación de reportes, migraciones y seeds de base de datos son más simples y legibles en Python que en JS/TS.</p>
+        </div>
+      </div>
+      <div class="li pro">
+        <span class="ico">💡</span>
+        <div class="body">
+          <h4>Menor curva de entrada para el equipo</h4>
+          <p>Para un proyecto académico, Python reduce la complejidad del backend y permite enfocarse en la lógica de negocio en lugar de la infraestructura.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 9 · DESVENTAJAS -->
+  <section class="slide" data-i="9">
+    <h2 class="slide-title">Desventajas y Dificultades</h2>
+    <div class="list">
+      <div class="li con">
+        <span class="ico">📱</span>
+        <div class="body">
+          <h4>Python no existe en mobile nativo</h4>
+          <p>No hay equivalente real a React Native. Kivy y BeeWare/Toga existen, pero su ecosistema es rudimentario — sin acceso real a módulos nativos de Expo (cámara, sensores, push notifications, geolocalización).</p>
+        </div>
+      </div>
+      <div class="li con">
+        <span class="ico">🏪</span>
+        <div class="body">
+          <h4>Distribución en App Store y Google Play</h4>
+          <p>Publicar una app Python en las tiendas es extremadamente complejo. Las plataformas no están diseñadas para eso y hay restricciones técnicas y políticas serias.</p>
+        </div>
+      </div>
+      <div class="li con">
+        <span class="ico">🎨</span>
+        <div class="body">
+          <h4>Experiencia de usuario nativa vs. híbrida degradada</h4>
+          <p>Sin Expo Router, sin Reanimated, sin componentes de navegación nativa. La UX de una app Python mobile sería notablemente inferior a lo que ofrece React Native.</p>
+        </div>
+      </div>
+      <div class="li con">
+        <span class="ico">⚙️</span>
+        <div class="body">
+          <h4>GIL limita la concurrencia real</h4>
+          <p>El Global Interpreter Lock de CPython limita el paralelismo real en el backend. Con asyncio es manejable, pero requiere que toda la aplicación sea async — lo que rompe muchas librerías síncronas.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 10 · VEREDICTO -->
+  <section class="slide" data-i="10">
+    <h2 class="slide-title">Veredicto</h2>
+    <table class="vtable">
+      <thead>
+        <tr>
+          <th>Criterio</th>
+          <th>Expo / React Native</th>
+          <th>Python</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>UI nativa iOS / Android</td>
+          <td><span class="badge g">Nativo</span></td>
+          <td><span class="badge r">Muy difícil</span></td>
+        </tr>
+        <tr>
+          <td>Distribución en tiendas</td>
+          <td><span class="badge g">Integrado (EAS)</span></td>
+          <td><span class="badge r">No soportado</span></td>
+        </tr>
+        <tr>
+          <td>Integración con IA / ML</td>
+          <td><span class="badge y">Manual vía fetch</span></td>
+          <td><span class="badge g">SDKs oficiales</span></td>
+        </tr>
+        <tr>
+          <td>Velocidad de prototipado</td>
+          <td><span class="badge y">Media</span></td>
+          <td><span class="badge g">Alta (backend)</span></td>
+        </tr>
+        <tr>
+          <td>Concurrencia bajo carga</td>
+          <td><span class="badge b">N/A (cliente)</span></td>
+          <td><span class="badge y">Limitado (GIL)</span></td>
+        </tr>
+        <tr>
+          <td>Ecosistema y comunidad</td>
+          <td><span class="badge g">Grande</span></td>
+          <td><span class="badge g">Muy grande</span></td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="conclusion">
+      <p><strong>Conclusión:</strong> Python no puede reemplazar Expo/React Native en la capa móvil, pero es una elección excelente para el <strong>backend y la lógica de IA</strong>. La arquitectura óptima combina ambos: <strong>FastAPI (Python) + Expo (React Native)</strong> — cada tecnología donde brilla.</p>
+    </div>
+  </section>
+
+</div><!-- /deck -->
+
+<script>
+  const TOTAL = 11;
+  let current = 0;
+  let peer, conn;
+  let qrGenerated = false;
+
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const progressFill = document.getElementById('progress-fill');
+  const counter = document.getElementById('counter');
+  const connDot = document.getElementById('conn-dot');
+  const connLabel = document.getElementById('conn-label');
+
+  function showSlide(n) {
+    const prev = slides[current];
+    prev.classList.remove('active');
+    prev.classList.add('exit');
+    setTimeout(() => prev.classList.remove('exit'), 480);
+
+    current = Math.max(0, Math.min(TOTAL - 1, n));
+    slides[current].classList.add('active');
+
+    progressFill.style.width = ((current / (TOTAL - 1)) * 100) + '%';
+    counter.textContent = (current + 1) + ' / ' + TOTAL;
+
+    if (conn && conn.open) {
+      conn.send({ type: 'slide', index: current });
+    }
+  }
+
+  function go(dir) { showSlide(current + dir); }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); go(1); }
+    else if (e.key === 'ArrowLeft') { e.preventDefault(); go(-1); }
+    else if (e.key === 'q' || e.key === 'Q') toggleQR();
+    else if (e.key === 'Escape') closeQR();
+  });
+
+  // ── PeerJS ──
+  function initPeer() {
+    peer = new Peer(undefined, {
+      host: 'peerjs.com', port: 443, path: '/',
+      secure: true, debug: 0,
+      config: { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] }
+    });
+
+    peer.on('open', id => {
+      buildQR(id);
+    });
+
+    peer.on('connection', c => {
+      conn = c;
+      connDot.classList.add('on');
+      connLabel.textContent = 'Conectado';
+
+      conn.on('data', msg => {
+        if (msg.type === 'next') go(1);
+        else if (msg.type === 'prev') go(-1);
+        else if (msg.type === 'goto') showSlide(msg.index);
+        else if (msg.type === 'ping') conn.send({ type: 'pong', index: current, total: TOTAL });
+      });
+
+      conn.on('close', () => {
+        connDot.classList.remove('on');
+        connLabel.textContent = 'Sin control remoto';
+      });
+
+      // Sync slide to remote on connect
+      conn.on('open', () => conn.send({ type: 'slide', index: current }));
+      conn.send({ type: 'slide', index: current, total: TOTAL });
+    });
+
+    peer.on('error', () => {
+      connLabel.textContent = 'Error de conexión';
+    });
+  }
+
+  function buildQR(peerId) {
+    if (qrGenerated) return;
+    qrGenerated = true;
+
+    const base = window.location.origin + window.location.pathname.replace('presentacion.html','').replace('presentacion','');
+    const remoteUrl = base + 'remote?id=' + peerId;
+
+    document.getElementById('qr-url').textContent = remoteUrl;
+
+    new QRCode(document.getElementById('qr-code'), {
+      text: remoteUrl,
+      width: 200, height: 200,
+      colorDark: '#ffffff', colorLight: '#0f1729',
+      correctLevel: QRCode.CorrectLevel.M
+    });
+  }
+
+  function toggleQR() {
+    const panel = document.getElementById('qr-panel');
+    const overlay = document.getElementById('qr-overlay');
+    panel.classList.toggle('show');
+    overlay.classList.toggle('show');
+  }
+
+  function closeQR() {
+    document.getElementById('qr-panel').classList.remove('show');
+    document.getElementById('qr-overlay').classList.remove('show');
+  }
+
+  // Init
+  progressFill.style.width = '0%';
+  initPeer();
+</script>
+</body>
+</html>
