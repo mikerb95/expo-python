@@ -6,21 +6,19 @@
   <title>Control Remoto · Python</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg: #080d1a;
-      --surface: #0f1729;
-      --surface2: #1a2340;
-      --blue: #4584b6;
-      --yellow: #ffd43b;
-      --text: #eef2f8;
-      --muted: #7a90b0;
-      --border: #1e2d47;
-      --green: #22c55e;
-      --red: #ef4444;
-      --r: 18px;
+      --bg:      #0c0c0c;
+      --surface: #161616;
+      --border:  #2a2a2a;
+      --crimson: #A51C30;
+      --text:    #ededed;
+      --sub:     #888;
+      --green:   #4ade80;
+      --red:     #f87171;
     }
 
     html, body {
@@ -37,71 +35,76 @@
     }
 
     .top-strip {
-      position: fixed; top: 0; left: 0; right: 0; height: 3px;
-      background: linear-gradient(90deg, var(--blue), var(--yellow));
+      position: fixed; top: 0; left: 0; right: 0;
+      height: 3px; background: var(--crimson);
     }
 
-    /* ── Screens ── */
-    .screen { width: 100%; max-width: 360px; display: none; flex-direction: column; align-items: center; gap: 20px; }
+    .screen {
+      width: 100%; max-width: 360px;
+      display: none; flex-direction: column;
+      align-items: center; gap: 20px;
+    }
     .screen.visible { display: flex; }
 
-    /* ── Connecting screen ── */
-    .conn-icon { font-size: 48px; }
-    .conn-title { font-size: 22px; font-weight: 700; }
-    .conn-sub { font-size: 14px; color: var(--muted); text-align: center; line-height: 1.6; }
+    /* Connecting */
+    .conn-icon  { font-size: 44px; }
+    .conn-title { font-size: 20px; font-weight: 700; }
+    .conn-sub   { font-size: 14px; color: var(--sub); text-align: center; line-height: 1.6; }
 
     .spinner {
-      width: 28px; height: 28px; border: 3px solid var(--border);
-      border-top-color: var(--blue); border-radius: 50%;
+      width: 26px; height: 26px;
+      border: 2px solid var(--border);
+      border-top-color: var(--crimson);
+      border-radius: 50%;
       animation: spin .7s linear infinite;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    #error-msg {
-      font-size: 13px; color: var(--red); text-align: center; display: none;
-    }
+    #error-msg { font-size: 13px; color: var(--red); text-align: center; display: none; }
 
     #retry-btn {
-      padding: 12px 32px; background: var(--blue);
-      border: none; border-radius: 12px; color: white;
+      padding: 12px 32px; background: var(--crimson);
+      border: none; border-radius: 4px; color: white;
       font-size: 15px; font-weight: 600; cursor: pointer;
       font-family: 'Inter', sans-serif; display: none;
     }
 
-    /* ── Remote screen ── */
+    /* Remote */
     .status-bar {
-      width: 100%; background: var(--surface); border: 1px solid var(--border);
-      border-radius: 12px; padding: 12px 16px;
+      width: 100%; background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px; padding: 12px 16px;
       display: flex; align-items: center; justify-content: space-between;
     }
     .status-left { display: flex; align-items: center; gap: 8px; }
-    #dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); }
-    #status-lbl { font-size: 13px; color: var(--muted); }
-    #slide-num { font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
+    #dot        { width: 7px; height: 7px; border-radius: 50%; background: var(--green); }
+    #status-lbl { font-size: 13px; color: var(--sub); }
+    #slide-num  { font-size: 13px; color: var(--sub); font-variant-numeric: tabular-nums; }
 
-    #prog-bar { width: 100%; height: 4px; background: var(--surface2); border-radius: 100px; overflow: hidden; }
-    #prog-fill { height: 100%; background: linear-gradient(90deg, var(--blue), var(--yellow)); border-radius: 100px; transition: width .35s ease; }
+    #prog-bar  { width: 100%; height: 2px; background: var(--border); }
+    #prog-fill { height: 100%; background: var(--crimson); transition: width .35s ease; }
 
     #slide-name {
-      font-size: 15px; font-weight: 600; text-align: center; color: var(--text);
-      background: var(--surface); border: 1px solid var(--border);
-      border-radius: 12px; padding: 14px 18px; width: 100%; line-height: 1.3;
+      font-size: 15px; font-weight: 600; text-align: center;
+      color: var(--text); background: var(--surface);
+      border: 1px solid var(--border); border-left: 3px solid var(--crimson);
+      padding: 14px 18px; width: 100%; line-height: 1.3;
     }
 
-    .nav-row { display: flex; gap: 14px; width: 100%; }
+    .nav-row { display: flex; gap: 12px; width: 100%; }
 
     .btn-nav {
-      flex: 1; height: 120px; border: none; border-radius: var(--r);
+      flex: 1; height: 120px; border: none; border-radius: 4px;
       font-size: 44px; cursor: pointer;
-      transition: transform .1s, opacity .1s;
+      transition: transform .1s, opacity .15s;
       display: flex; align-items: center; justify-content: center;
     }
-    .btn-nav:active { transform: scale(.93); opacity: .8; }
+    .btn-nav:active { transform: scale(.93); opacity: .75; }
 
     #btn-prev { background: var(--surface); border: 1px solid var(--border); color: var(--text); }
-    #btn-next { background: linear-gradient(135deg, var(--blue), #3a6fa0); color: white; }
+    #btn-next { background: var(--crimson); color: white; }
 
-    .swipe-hint { font-size: 11px; color: var(--muted); opacity: .5; }
+    .swipe-hint { font-size: 10px; color: var(--border); letter-spacing: 1px; text-transform: uppercase; }
   </style>
 </head>
 <body>
@@ -124,7 +127,7 @@
       <div id="dot"></div>
       <span id="status-lbl">Conectado</span>
     </div>
-    <span id="slide-num">1 / 11</span>
+    <span id="slide-num">— / —</span>
   </div>
 
   <div id="prog-bar"><div id="prog-fill" style="width:0%"></div></div>
@@ -132,68 +135,101 @@
   <div id="slide-name">—</div>
 
   <div class="nav-row">
-    <button class="btn-nav" id="btn-prev" onclick="send('prev')">‹</button>
-    <button class="btn-nav" id="btn-next" onclick="send('next')">›</button>
+    <button class="btn-nav" id="btn-prev" onclick="send('prev')">&#8249;</button>
+    <button class="btn-nav" id="btn-next" onclick="send('next')">&#8250;</button>
   </div>
 
   <p class="swipe-hint">Desliza ← → para cambiar slide</p>
 </div>
 
 <script>
-  const TOTAL = 11;
-  const SLIDE_NAMES = [
+  // Must match presentacion.html
+  var PEER_ID = 'pypres-mike-python-2026';
+
+  var SLIDE_NAMES = [
     'Portada', '¿Qué es Python?', '¿Para qué se utiliza?',
     'Características', 'Ventajas', 'Áreas de Aplicación',
     'Análisis del Proyecto', 'Contexto del Proyecto',
-    'Ventajas en Python', 'Desventajas', 'Veredicto',
+    'Ventajas en Python', 'Desventajas', 'Veredicto'
   ];
 
-  let current = 0;
+  var peer, conn;
+  var totalSlides = 11;
+  var currentSlide = 0;
 
-  const progFill = document.getElementById('prog-fill');
-  const slideNum = document.getElementById('slide-num');
-  const slideName = document.getElementById('slide-name');
+  var progFill  = document.getElementById('prog-fill');
+  var slideNum  = document.getElementById('slide-num');
+  var slideName = document.getElementById('slide-name');
+  var errorMsg  = document.getElementById('error-msg');
+  var retryBtn  = document.getElementById('retry-btn');
+  var spinner   = document.getElementById('spinner');
 
   function showScreen(id) {
-    document.querySelectorAll('.screen').forEach(s => s.classList.remove('visible'));
+    document.querySelectorAll('.screen').forEach(function(s) { s.classList.remove('visible'); });
     document.getElementById(id).classList.add('visible');
   }
 
-  function updateUI(n) {
-    current = Math.max(0, Math.min(TOTAL - 1, n));
-    slideNum.textContent = (current + 1) + ' / ' + TOTAL;
-    slideName.textContent = SLIDE_NAMES[current] || 'Diapositiva ' + (current + 1);
-    progFill.style.width = (current / (TOTAL - 1) * 100) + '%';
+  function onFail() {
+    spinner.style.display = 'none';
+    errorMsg.style.display = 'block';
+    retryBtn.style.display = 'inline-block';
   }
 
-  async function postSlide(n) {
-    await fetch('/api/state', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ slide: n }),
-    });
-    updateUI(n);
+  function updateSlide(n) {
+    currentSlide = Math.max(0, Math.min(totalSlides - 1, n));
+    slideNum.textContent  = (currentSlide + 1) + ' / ' + totalSlides;
+    slideName.textContent = SLIDE_NAMES[currentSlide] || ('Diapositiva ' + (currentSlide + 1));
+    progFill.style.width  = (currentSlide / (totalSlides - 1) * 100) + '%';
+  }
+
+  function send(type) {
+    if (!conn || !conn.open) return;
+    conn.send({ type: type });
+    if (type === 'next') updateSlide(Math.min(currentSlide + 1, totalSlides - 1));
+    else                 updateSlide(Math.max(currentSlide - 1, 0));
     if (navigator.vibrate) navigator.vibrate(15);
   }
 
-  function send(dir) { postSlide(current + dir).catch(() => {}); }
+  function connect() {
+    peer = new Peer(undefined, { secure: true, debug: 0 });
 
-  // Polling — sincroniza estado desde la presentación
-  setInterval(async () => {
-    try {
-      const { slide } = await fetch('/api/state').then(r => r.json());
-      if (slide !== current) updateUI(slide);
-      showScreen('screen-remote');
-    } catch (_) {}
-  }, 1000);
+    peer.on('open', function() {
+      conn = peer.connect(PEER_ID, { reliable: true });
+      var timeout = setTimeout(onFail, 9000);
 
-  // Swipe support
-  let startX = 0;
-  document.addEventListener('touchstart', e => { startX = e.touches[0].clientX; }, { passive: true });
-  document.addEventListener('touchend', e => {
-    const dx = e.changedTouches[0].clientX - startX;
-    if (Math.abs(dx) > 55) send(dx < 0 ? 1 : -1);
+      conn.on('open', function() {
+        clearTimeout(timeout);
+        conn.send({ type: 'ping' });
+        showScreen('screen-remote');
+      });
+
+      conn.on('data', function(msg) {
+        if (msg.type === 'slide' || msg.type === 'pong') {
+          if (msg.total) totalSlides = msg.total;
+          updateSlide(msg.index);
+        }
+      });
+
+      conn.on('close', function() {
+        document.getElementById('status-lbl').textContent = 'Desconectado';
+        document.getElementById('dot').style.background = 'var(--red)';
+      });
+
+      conn.on('error', onFail);
+    });
+
+    peer.on('error', onFail);
+  }
+
+  // Swipe
+  var startX = 0;
+  document.addEventListener('touchstart', function(e) { startX = e.touches[0].clientX; }, { passive: true });
+  document.addEventListener('touchend', function(e) {
+    var dx = e.changedTouches[0].clientX - startX;
+    if (Math.abs(dx) > 55) send(dx < 0 ? 'next' : 'prev');
   }, { passive: true });
+
+  connect();
 </script>
 </body>
 </html>
